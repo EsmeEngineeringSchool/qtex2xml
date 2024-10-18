@@ -1,0 +1,344 @@
+#!/usr/bin/python3
+
+import sys
+import os
+# les modules suivants partagent des fonctions avec transqtex 
+sys.path.append(os.path.abspath("/home/enseignements/ian/bin"))
+# le format (les types d'entrees) est partagé avec l'autre script
+from format_qtex import entrees 
+# quelques fonctions de manipulations de chaines partagées avec l'autre script
+from string_ import get,mult,grep
+
+# entrees par type 
+infos={"global" : globalinfo , "multichoice" : multichoiceinfo, "numerical": numericalinfo, "coderunner" : coderunnerinfo}
+globalinfo      = ['TYPE','NAME',('Q','QLONG'),'GFBACK','TAGS']
+multichoiceinfo = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
+numericalinfo   = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
+coderunnerinfo  = ['CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
+                   'CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'), 'CR_CASE_ASEXAMPLE']
+
+# entrées multiples exigées de même taille et au moins une doit être présente
+exigences={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
+           "numerical"   :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
+           "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED']}
+
+#--------------------------------------------------------------------------------------------------
+# balise xml d'ouverture (openning) 
+# les arguments de *args modifie les options de la balise
+# <nombalise arg[0][0]=arg[0][1] arg[1][0]=arg[1][1] ... >
+# il est possible de rajouter un caracère à la balise ex. bal=?
+def oxml(nombalise,*args,bal=""):
+    if len(args) !=0 :
+        out=f"<{bal}{nombalise}"
+        for arg in args:
+            out+=f" {arg[0]}=\"{arg[1]}\""
+        return out+f"{bal}>"
+    else:
+        return f"<{nombalise}>"
+
+#--------------------------------------------------------------------------------------------------
+# balise xml de fermeture (closing)
+def cxml(nombalise):
+    return f"</{nombalise}>\n"
+
+#--------------------------------------------------------------------------------------------------
+# <nombalise>valeur</nombalise>
+def ocxml(nombalise,*args,valeur=None):
+    return oxml(nombalise,*args)+valeur+cxml(nombalise) if valeur else oxml(nombalise,*args)+cxml(nombalise)
+
+#--------------------------------------------------------------------------------------------------
+# retourne des balises xml de texte
+def textxml(text=None):
+    return f"<text>{text}</text>" if text else f"<text></text>"
+
+#--------------------------------------------------------------------------------------------------
+# retourne la balise CDATA 
+def cdataxml(cdata=None):
+    return f"<![CDATA[{cdata}]]>" if cdata else f"<![CDATA[]]>"
+
+#--------------------------------------------------------------------------------------------------
+# retourne la balise <text><![CDATA[text]]><text> 
+def textcdataxml(text=None):
+    return textxml(text=cdataxml(cdata=text)) 
+
+#--------------------------------------------------------------------------------------------------
+# <nombalise><text>valeur</text></nombalise>
+def octextxml(nombalise,*args,text="",indent=0):
+    return oxml(nombalise,*args)+textxml(text)+cxml(nombalise) if not indent \
+      else oxml(nombalise,*args)+'\n'+(indent+1)*'\t'+textxml(text)+'\n'+indent*'\t'+cxml(nombalise)
+
+#--------------------------------------------------------------------------------------------------
+# <nombalise><![CDATA[valeur]]></nombalise>
+def occdataxml(nombalise,*args,cdata="",indent=0):
+    return oxml(nombalise,*args)+cdataxml(cdata)+cxml(nombalise) if not indent \
+      else oxml(nombalise,*args)+'\n'+(indent+1)*'\t'+cdataxml(cdata)+'\n'+indent*'\t'+cxml(nombalise)
+
+#--------------------------------------------------------------------------------------------------
+# <nombalise><text><![CDATA[valeur]]></text></nombalise>
+def octextcdataxml(nombalise,*args,cdata="",indent=0):
+    return oxml(nombalise,*args)+textcdataxml(cdata)+cxml(nombalise) if not indent \
+      else oxml(nombalise,*args)+'\n'+(indent+1)*'\t'+textcdataxml(cdata)+'\n'+indent*'\t'+cxml(nombalise)
+
+
+#--------------------------------------------------------------------------------------------------
+# answer in xml (multichoice,numerical)
+def answerxml(data,outfile,indent=0):
+    fraction,text,feedback=data
+    outfile.write(indent*'\t'+oxml("answer",("fraction",fraction),("format","html"))+'\n')
+    outfile.write((indent+1)*'\t'+textxml(text)+'\n')
+    outfile.write((indent+1)*'\t'+octextxml("feedback",("format","html"),text=feedback,indent=indent+1))
+    outfile.write((indent+1)*'\t'+ocxml("tolerance",valeur="0.0"))
+    outfile.write(indent*'\t'+cxml("answer"))
+
+#--------------------------------------------------------------------------------------------------
+# answer in xml (coderunner) 
+def testcasexml(data,outfile,indent=0):
+    mark,testcode,useasexample,expected=data
+    outfile.write(indent*'\t'+oxml("testcase",("testtype","0"),("useasexample","0"),("hiderestiffail","0"),("mark",mark))+'\n')
+    outfile.write((indent+1)*'\t'+octextcdataxml("testcode",cdata=testcode,indent=indent+1))
+    outfile.write((indent+1)*'\t'+octextxml("stdin",text="",indent=indent+1))
+    outfile.write((indent+1)*'\t'+octextcdataxml("expected",cdata=expected,indent=indent+1))
+    outfile.write((indent+1)*'\t'+octextxml("extra",text="",indent=indent+1))
+    outfile.write((indent+1)*'\t'+octextxml("display",text="SHOW",indent=indent+1))
+    outfile.write(indent*'\t'+cxml("testcase"))
+    pass
+
+#--------------------------------------------------------------------------------------------------
+# category header in xml file
+def category_xml(category,outfile,indent=0):
+    outfile.write(indent*'\t'+"<!-- question: 0  -->"+'\n')
+    outfile.write(indent*'\t'+oxml("question",("type","category"))+'\n')
+    outfile.write((indent+1)*'\t'+octextxml("category",text=category))
+    outfile.write((indent+1)*'\t'+octextxml("info",("format","html"),text=""))
+    outfile.write((indent+1)*'\t'+ocxml("idnumber"))
+    outfile.write(indent*'\t'+cxml("question"))
+
+#--------------------------------------------------------------------------------------------------
+# header and footer d'un test au format xml
+def headertest_xml(outfile,indent=0):
+    outfile.write(indent*'\t'+oxml("xml",("version","1.0"),("encoding","UTF-8"),bal="?")+'\n')
+    outfile.write(indent*'\t'+oxml("quiz")+'\n')
+#--------------------------------------------------------------------------------------------------
+def footertest_xml(outfile,indent=0):
+    outfile.write(indent*'\t'+cxml("quiz"))
+
+#--------------------------------------------------------------------------------------------------
+# question au format xml toutes les variables sont lues par readtex_()
+# info est dictionnaire avec toutes les entrées utiles
+def add_question_xml(info,outfile,indent=0):
+
+    questiontype=info["TYPE"]
+
+    # FOR ALL TYPES
+    outfile.write(indent*'\t'+"<!-- question: gentestmoodle.py  -->"+'\n')
+    outfile.write(indent*'\t'+oxml("question",("type",info["TYPE"]))+'\n')
+    outfile.write((indent+1)*'\t'+octextxml("name",text=info["NAME"]))
+    outfile.write((indent+1)*'\t'+octextcdataxml("questiontext",("format","html"),cdata=info["Q"],indent=indent+1))
+    outfile.write((indent+1)*'\t'+octextxml("generalfeedback",("format","html"),text=info["GFBACK"]))
+    outfile.write((indent+1)*'\t'+ocxml("defaultgrade",valeur="1.0000000")) 
+    outfile.write((indent+1)*'\t'+ocxml("penalty",valeur="0.3333333"))
+    outfile.write((indent+1)*'\t'+ocxml("hidden",valeur="0"))
+    outfile.write((indent+1)*'\t'+ocxml("idnumber"))
+
+    #MULTICHOICE
+    if info["TYPE"] == "multichoice" :
+        outfile.write((indent+1)*'\t'+ocxml("single",valeur="false"))
+        outfile.write((indent+1)*'\t'+ocxml("shuffleanswers",valeur="true"))
+        outfile.write((indent+1)*'\t'+ocxml("answernumbering",valeur="123"))
+        outfile.write((indent+1)*'\t'+ocxml("showstandardinstruction",valeur="0"))
+        outfile.write((indent+1)*'\t'+octextxml("correctfeedback",("format","html"),\
+                                     text=info['CFBACK'],indent=indent+1))
+        outfile.write((indent+1)*'\t'+octextxml("partiallycorrectfeedback",("format","html"),\
+                                     text=info['PFBACK'],indent=indent+1))
+        outfile.write((indent+1)*'\t'+octextxml("incorrectfeedback",("format","html"),\
+                                     text=info['IFBACK'],indent=indent+1))
+        outfile.write((indent+1)*'\t'+"<shownumcorrect/>"+'\n')
+
+    #NUMERICAL
+    if info["TYPE"] == "numerical" :
+        outfile.write((indent+1)*'\t'+ocxml("unitgradingtype",valeur="0"))
+        outfile.write((indent+1)*'\t'+ocxml("unitpenalty",valeur="0"))
+        outfile.write((indent+1)*'\t'+ocxml("showunits",valeur="3"))
+        outfile.write((indent+1)*'\t'+ocxml("unitsleft",valeur="0"))
+
+    #CODERUNNER
+    if info["TYPE"] == "coderunner" :
+         outfile.write((indent+1)*'\t'+ocxml("coderunnertype",valeur="python3"))
+         outfile.write((indent+1)*'\t'+ocxml("prototypetype",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("allornothing",valeur="1"))
+         outfile.write((indent+1)*'\t'+ocxml("penaltyregime",valeur="10,20, ..."))
+         outfile.write((indent+1)*'\t'+ocxml("precheck",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("hidecheck",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("showsource",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("answerboxlines",valeur=info["answerboxlines"]))
+         outfile.write((indent+1)*'\t'+ocxml("answerboxcolumns",valeur="100"))
+         outfile.write((indent+1)*'\t'+occdataxml("answerpreload",cdata=info["CR_PRELOAD"],indent=indent+1))
+         outfile.write((indent+1)*'\t'+ocxml("globalextra",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("useace",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("resultcolumns",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("template",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("iscombinatortemplate",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("allowmultiplestdins",valeur=""))
+         outfile.write((indent+1)*'\t'+occdataxml("answer",cdata=info["CR_ANSWER"],indent=indent+1))
+         outfile.write((indent+1)*'\t'+ocxml("validateonsave",valeur="1"))
+         outfile.write((indent+1)*'\t'+ocxml("testsplitterre",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("language",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("acelang",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("sandbox",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("grader",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("cputimelimitsecs",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("memlimitmb",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("sandboxparams",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("templateparams",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("hoisttemplateparams",valeur="1"))
+         outfile.write((indent+1)*'\t'+ocxml("extractcodefromjson",valeur="1"))
+         outfile.write((indent+1)*'\t'+ocxml("templateparamslang",valeur="None"))
+         outfile.write((indent+1)*'\t'+ocxml("templateparamsevalpertry",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("templateparamsevald",valeur="{}"))
+         outfile.write((indent+1)*'\t'+ocxml("twigall",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("uiplugin",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("uiparameters",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("attachments",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("attachmentsrequired",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("maxfilesize",valeur="10240"))
+         outfile.write((indent+1)*'\t'+ocxml("filenamesregex",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("filenamesexplain",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("displayfeedback",valeur="1"))
+         outfile.write((indent+1)*'\t'+ocxml("giveupallowed",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("prototypeextra",valeur=""))
+         
+    # -----------------------------------------
+    # answers for MULTICHOICE NUMERICAL
+    # -----------------------------------------
+    if info["TYPE"] in ["multichoice","numerical"] :
+        #fraction,text,feedback
+        answers=list(zip(info["ANSW_GRAD"],info["ANSW_TEXT"],info["ANSW_FBACK"]))
+        for ans in answers:
+            answerxml(ans,outfile,indent=1)
+    # -----------------------------------------
+    # testcases for CODERUNNER  
+    # -----------------------------------------
+    if info["TYPE"] == "coderunner":
+        outfile.write((indent+1)*'\t'+oxml("testcases")+'\n')
+        #mark,testcode,useasexample,expected
+        testcases=list(zip(info["CR_CASE_MARK"],info["CR_CASE_CODE"],info["CR_CASE_ASEXAMPLE"],info["CR_CASE_EXPECTED"])) 
+        for testcase in testcases:
+            testcasexml(testcase,outfile,indent=1)
+        outfile.write(indent*'\t'+cxml("testcases"))
+    # -----------------------------------------
+    # tags for ALL
+    # -----------------------------------------
+    outfile.write((indent+1)*'\t'+oxml("tags")+'\n')
+    for tag in info["TAGS"].split():
+        outfile.write((indent+2)*'\t'+ocxml("tag",valeur=textxml(tag)))
+    outfile.write((indent+1)*'\t'+cxml("tags"))
+
+    #END OF QUESTION
+    outfile.write(indent*'\t'+cxml("question"))
+
+#--------------------------------------------------------------------------------------------------
+#lire la categorie à partir du dossier dans un fichier category 
+def readcategory(path):
+    with open(path+'category') as f:
+        data=f.read()
+    return get("CAT",data)
+
+#--------------------------------------------------------------------------------------------------
+# retourne la clé présente dans le fichier tex_ si il y a plusieurs possibilités.
+# La fonction retourne un tuple le premier élément est la clé d'accès à la clé et la forme présente dans le fichier
+# Le tuple peut donc présenter deux fois la même valeur
+# Note : c'est pour traiter les cas de #Q et #QLONG #END QLONG. Ce qui est lue est rangé dans info["Q"] ou de façon plus
+# générale dans info[cle[0]] (le premier élement retourné par cette fonction) l
+def quellecle(cle,data):
+    which_index = [k for k,c in enumerate(cle) if grep(c,data)]
+    if not isinstance(cle,tuple) :
+        return (cle,cle)
+    else :
+        return tuple([cle[0]]+[cle[c] for c in which_index])
+
+
+#--------------------------------------------------------------------------------------------------
+# pour définir quelques valeurs par défaut (test si des clés exigées sont absentes, 
+# le prétexte étant de pouvoir compter le nombre d'éléments)
+# et retourne le dictionnaire info qui regroupe tous les paramètres lues dans le fichier tex_
+def default_values_before(data):
+    info={}
+    qtype=get("TYPE",data)
+    if not any([grep(cle,data) for cle in exigences[qtype]]) :
+        print(f"all the keys are missing for {qtype} : {exigences[qtype]}")
+        sys.exit()
+    else:
+        m=mult(exigences[qtype][[grep(cle,data) for cle in exigences[qtype]].index(True)],data)
+
+    match qtype :
+        case "multichoice" | "numerical" :
+            if not grep('ANSW_FBACK',data) : info['ANSW_FBACK']=[None]*m
+            if not grep('ANSW_TEXT',data) :info['ANSW_TEXT']=[""]*m
+            if not grep('ANSW_GRAD',data) :info['ANSW_GRAD']=["0"]*m
+        case "coderunner" :
+            if not grep("CR_CASE_ASEXAMPLE",data) : info["CR_CASE_ASEXAMPLE"] =["0"]*m
+            if not grep("CR_CASE_MARK",data) : info["CR_CASE_MARK"] = ["1.0"]*m
+            info["answerboxlines"]=str(int((get("CR_ANSWER",data).count("\n")+1)*1.2))
+    return info
+
+
+#--------------------------------------------------------------------------------------------------
+# Lecture des fichiers au format maison tex_ 
+# retourne un dictionnaire des infos lues dans le fichier tex_
+def readtex_(file):
+    data=file.read()
+    # ------------------------------------------
+    # default value
+    # ------------------------------------------
+    info=default_values_before(data) 
+    # lectures des entrées globales
+    for c in infos["global"] :
+        cle=quellecle(c,data)
+        if not grep(cle[1],data) : continue
+        info[cle[0]]=get(cle[1],data) 
+    # lectures des entrées dépendantes du type de question
+    for c in infos[info["TYPE"]] :
+        cle=quellecle(c,data)
+        for cc in cle[1:]:
+            if not grep(cc,data) : break 
+            if cle[0] in info.keys() :
+                info[cle[0]].extend(get(cc,data))
+            else:
+                info[cle[0]]=get(cc,data)
+    return info
+
+#--------------------------------------------------------------------------------------------------
+# main parsing function
+def parsing():
+    import os 
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i','--input', nargs='+', type=argparse.FileType('r'),
+                        default=sys.stdin,help='input files (on single or a set)',required=True)
+    parser.add_argument('-o','--output', nargs='?', type=argparse.FileType('a'),
+                        default=sys.stdout, help='output file or stdout')
+    args = parser.parse_args()
+
+    output=args.output
+    if output.name !="<stdout>":
+        output.seek(0,0)
+        output.truncate()
+
+    path=os.path.dirname(args.input[0].name)+'/'
+    filespath=args.input
+    return path,filespath,output
+
+#--------------------------------------------------------------------------------------------------
+if __name__=="__main__":
+    
+    path,filespath,outfile=parsing()
+    headertest_xml(outfile=outfile)
+    category_xml(readcategory(path),outfile)
+    for file in filespath :
+ #       print(file.name,file=sys.stderr,end=' ')
+        info=readtex_(file)
+ #        print(f"{info["T"]} size info: {len(info)}",file=sys.stderr)
+        add_question_xml(info,outfile)
+
+    footertest_xml(outfile=outfile)
+
