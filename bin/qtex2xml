@@ -3,24 +3,24 @@
 import sys
 import os
 # les modules suivants partagent des fonctions avec transqtex 
-sys.path.append(os.path.abspath("/home/enseignements/ian/bin"))
+sys.path.append(os.path.abspath("/home/dev/qtex2xml/bin"))
 # le format (les types d'entrees) est partagé avec l'autre script
 from format_qtex import entrees 
 # quelques fonctions de manipulations de chaines partagées avec l'autre script
 from string_ import get,mult,grep
 
 # entrees par type 
-infos={"global" : globalinfo , "multichoice" : multichoiceinfo, "numerical": numericalinfo, "coderunner" : coderunnerinfo}
 globalinfo      = ['TYPE','NAME',('Q','QLONG'),'GFBACK','TAGS']
 multichoiceinfo = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
 numericalinfo   = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
-coderunnerinfo  = ['CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
-                   'CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'), 'CR_CASE_ASEXAMPLE']
+coderunnerinfo  = ['CR_TEMPLATE', 'CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
+                   'CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'), 'CR_CASE_DISPLAY','CR_CASE_EXTRA','CR_CASE_ASEXAMPLE']
+infos={"global" : globalinfo , "multichoice" : multichoiceinfo, "numerical": numericalinfo, "coderunner" : coderunnerinfo}
 
 # entrées multiples exigées de même taille et au moins une doit être présente
 exigences={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
            "numerical"   :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
-           "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED']}
+           "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED','CR_CASE_DISPLAY','CR_CASE_EXTRA']}
 
 #--------------------------------------------------------------------------------------------------
 # balise xml d'ouverture (openning) 
@@ -93,13 +93,13 @@ def answerxml(data,outfile,indent=0):
 #--------------------------------------------------------------------------------------------------
 # answer in xml (coderunner) 
 def testcasexml(data,outfile,indent=0):
-    mark,testcode,useasexample,expected=data
+    mark,testcode,useasexample,expected,display,extra=data
     outfile.write(indent*'\t'+oxml("testcase",("testtype","0"),("useasexample","0"),("hiderestiffail","0"),("mark",mark))+'\n')
     outfile.write((indent+1)*'\t'+octextcdataxml("testcode",cdata=testcode,indent=indent+1))
     outfile.write((indent+1)*'\t'+octextxml("stdin",text="",indent=indent+1))
     outfile.write((indent+1)*'\t'+octextcdataxml("expected",cdata=expected,indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextxml("extra",text="",indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextxml("display",text="SHOW",indent=indent+1))
+    outfile.write((indent+1)*'\t'+octextxml("extra",text=extra,indent=indent+1))
+    outfile.write((indent+1)*'\t'+octextxml("display",text=display,indent=indent+1))
     outfile.write(indent*'\t'+cxml("testcase"))
     pass
 
@@ -123,7 +123,7 @@ def footertest_xml(outfile,indent=0):
     outfile.write(indent*'\t'+cxml("quiz"))
 
 #--------------------------------------------------------------------------------------------------
-# question au format xml toutes les variables sont lues par readtex_()
+# question au format xml toutes les variables sont lues par readqtex()
 # info est dictionnaire avec toutes les entrées utiles
 def add_question_xml(info,outfile,indent=0):
 
@@ -176,7 +176,7 @@ def add_question_xml(info,outfile,indent=0):
          outfile.write((indent+1)*'\t'+ocxml("globalextra",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("useace",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("resultcolumns",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("template",valeur=""))
+         outfile.write((indent+1)*'\t'+occdataxml("template",cdata=info["CR_TEMPLATE"]))
          outfile.write((indent+1)*'\t'+ocxml("iscombinatortemplate",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("allowmultiplestdins",valeur=""))
          outfile.write((indent+1)*'\t'+occdataxml("answer",cdata=info["CR_ANSWER"],indent=indent+1))
@@ -212,7 +212,9 @@ def add_question_xml(info,outfile,indent=0):
     # -----------------------------------------
     if info["TYPE"] in ["multichoice","numerical"] :
         #fraction,text,feedback
-        answers=list(zip(info["ANSW_GRAD"],info["ANSW_TEXT"],info["ANSW_FBACK"]))
+        answers=list(zip(info["ANSW_GRAD"],
+                         info["ANSW_TEXT"],
+                         info["ANSW_FBACK"]))
         for ans in answers:
             answerxml(ans,outfile,indent=1)
     # -----------------------------------------
@@ -220,8 +222,13 @@ def add_question_xml(info,outfile,indent=0):
     # -----------------------------------------
     if info["TYPE"] == "coderunner":
         outfile.write((indent+1)*'\t'+oxml("testcases")+'\n')
-        #mark,testcode,useasexample,expected
-        testcases=list(zip(info["CR_CASE_MARK"],info["CR_CASE_CODE"],info["CR_CASE_ASEXAMPLE"],info["CR_CASE_EXPECTED"])) 
+        #mark,testcode,useasexample,expected,display,extra
+        testcases=list(zip(info["CR_CASE_MARK"],
+                           info["CR_CASE_CODE"],
+                           info["CR_CASE_ASEXAMPLE"],
+                           info["CR_CASE_EXPECTED"],
+                           info["CR_CASE_DISPLAY"],
+                           info["CR_CASE_EXTRA"])) 
         for testcase in testcases:
             testcasexml(testcase,outfile,indent=1)
         outfile.write(indent*'\t'+cxml("testcases"))
@@ -244,11 +251,12 @@ def readcategory(path):
     return get("CAT",data)
 
 #--------------------------------------------------------------------------------------------------
-# retourne la clé présente dans le fichier tex_ si il y a plusieurs possibilités.
-# La fonction retourne un tuple le premier élément est la clé d'accès à la clé et la forme présente dans le fichier
+# retourne la clé présente dans le fichier qtex si il y a plusieurs possibilités.
+# La fonction retourne un tuple: le premier élément est la clé (dictionnaire) d'accès info 
+# et la forme de la clé qui réellement présente dans le fichier.
 # Le tuple peut donc présenter deux fois la même valeur
-# Note : c'est pour traiter les cas de #Q et #QLONG #END QLONG. Ce qui est lue est rangé dans info["Q"] ou de façon plus
-# générale dans info[cle[0]] (le premier élement retourné par cette fonction) l
+# Note : c'est pour traiter les cas de #Q et #QLONG #END QLONG. Ce qui est lu est rangé dans 
+# info["Q"] même si QLONG est la clé présente dans le fichier qtex. 
 def quellecle(cle,data):
     which_index = [k for k,c in enumerate(cle) if grep(c,data)]
     if not isinstance(cle,tuple) :
@@ -256,11 +264,10 @@ def quellecle(cle,data):
     else :
         return tuple([cle[0]]+[cle[c] for c in which_index])
 
-
 #--------------------------------------------------------------------------------------------------
 # pour définir quelques valeurs par défaut (test si des clés exigées sont absentes, 
 # le prétexte étant de pouvoir compter le nombre d'éléments)
-# et retourne le dictionnaire info qui regroupe tous les paramètres lues dans le fichier tex_
+# et retourne le dictionnaire info qui regroupe tous les paramètres lues dans le fichier qtex
 def default_values_before(data):
     info={}
     qtype=get("TYPE",data)
@@ -273,19 +280,22 @@ def default_values_before(data):
     match qtype :
         case "multichoice" | "numerical" :
             if not grep('ANSW_FBACK',data) : info['ANSW_FBACK']=[None]*m
-            if not grep('ANSW_TEXT',data) :info['ANSW_TEXT']=[""]*m
-            if not grep('ANSW_GRAD',data) :info['ANSW_GRAD']=["0"]*m
+            if not grep('ANSW_TEXT',data)  : info['ANSW_TEXT']=[""]*m
+            if not grep('ANSW_GRAD',data)  : info['ANSW_GRAD']=["0"]*m
         case "coderunner" :
+            if not grep("CR_TEMPLATE",data)       : info["CR_TEMPLATE"]=""
             if not grep("CR_CASE_ASEXAMPLE",data) : info["CR_CASE_ASEXAMPLE"] =["0"]*m
-            if not grep("CR_CASE_MARK",data) : info["CR_CASE_MARK"] = ["1.0"]*m
+            if not grep("CR_CASE_MARK",data)      : info["CR_CASE_MARK"] = ["1.0"]*m
+            if not grep("CR_CASE_DISPLAY",data)   : info["CR_CASE_DISPLAY"] = ["SHOW"]*m
+            if not grep("CR_CASE_EXTRA",data)     : info["CR_CASE_EXTRA"] = [""]*m
             info["answerboxlines"]=str(int((get("CR_ANSWER",data).count("\n")+1)*1.2))
     return info
 
 
 #--------------------------------------------------------------------------------------------------
-# Lecture des fichiers au format maison tex_ 
-# retourne un dictionnaire des infos lues dans le fichier tex_
-def readtex_(file):
+# Lecture des fichiers au format maison qtex
+# retourne un dictionnaire des infos lues dans le fichier qtex
+def readqtex(file):
     data=file.read()
     # ------------------------------------------
     # default value
@@ -335,9 +345,9 @@ if __name__=="__main__":
     headertest_xml(outfile=outfile)
     category_xml(readcategory(path),outfile)
     for file in filespath :
- #       print(file.name,file=sys.stderr,end=' ')
-        info=readtex_(file)
- #        print(f"{info["T"]} size info: {len(info)}",file=sys.stderr)
+        print(file.name,file=sys.stderr,end=' ')
+        info=readqtex(file)
+        print(f"{info['TYPE']} size info: {len(info)}",file=sys.stderr)
         add_question_xml(info,outfile)
 
     footertest_xml(outfile=outfile)
