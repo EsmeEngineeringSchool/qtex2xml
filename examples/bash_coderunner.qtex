@@ -44,7 +44,7 @@ dumbo1.txt
 dumbo2.txt
 #END CR_CASE_EXPECTED_LONG 
 
-#CR_USE_EXAMPLE 1
-#CR_USE_EXAMPLE 0
+#CR_CASE_ASEXAMPLE 1
+#CR_CASE_ASEXAMPLE 0
 
 #TAGS example bash template
