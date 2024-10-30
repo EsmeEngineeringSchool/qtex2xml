@@ -1,19 +1,18 @@
 # qtex2xml
 qtex2xml permet de produire des fichiers xml de questions de différents types (Coderunner, multichoice, ... ) de Moodle
 
-
 ## Exemple d'utilisation : 
 
-    bin/qtex2xml -i qtex/*.tex_ -o test.xml
+    bin/qtex2xml -i examples/*.qtex -o test.xml
 
 si l'option -o n'est pas donnée écrit dans la sortie standard (DEBUG seulement)
 
 `bin/transqtex` :
-    Permet de traduire une question tex_ du français à l'anglais en utilisant l'API Google Cloud
+    Permet de traduire une question qtex du français à l'anglais en utilisant l'API Google Cloud
 
 Exemple d'utilisation :
 
-    bin/transqtex -i qtex/horner.tex_ qtex_en/horner_en.tex_
+    bin/transqtex -i examples/bashcoderunner.qtex qtex_en/bashcoderunner_en.qtex
 
 si l'option -o n'est pas donnée écrit dans la sortie standard
 
@@ -24,8 +23,7 @@ Exemple d'utilisation :
 
     bin/transqtexAll qtex qtex_en
 
-
-## À propos du format de question `tex_`
+## À propos du format de question `qtex`
 
 Pour l'instant quelques types de questions Moodle sont pris en charge par les scripts 
 `qtex2xml` et `transqtex` :

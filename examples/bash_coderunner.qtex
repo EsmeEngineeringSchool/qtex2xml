@@ -1,45 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<quiz>
-<!-- question: 0  -->
-  <question type="category">
-    <category>
-      <text>$course$/top/Test coderunner Bash</text>
-    </category>
-    <info format="html">
-      <text></text>
-    </info>
-    <idnumber></idnumber>
-  </question>
+#TYPE coderunner
+#NAME Bash question 
+#Q Write bash code to list the names of all files in the current directory that have an extension of .txt. Files are listed 1 per line, in alphabetical order.
+#GFBACK Merci d'avoir pris le temps de répondre à cette question.
 
-<!-- question: 1048799  -->
-  <question type="coderunner">
-    <name>
-      <text>Bash question</text>
-    </name>
-    <questiontext format="html">
-      <text><![CDATA[<p>Write bash code to list the names of all files in the current directory that have an extension of .txt. Files are listed 1 per line, in alphabetical order.</p>]]></text>
-    </questiontext>
-    <generalfeedback format="html">
-      <text></text>
-    </generalfeedback>
-    <defaultgrade>1.0000000</defaultgrade>
-    <penalty>0.0000000</penalty>
-    <hidden>0</hidden>
-    <idnumber></idnumber>
-    <coderunnertype>python3</coderunnertype>
-    <prototypetype>0</prototypetype>
-    <allornothing>1</allornothing>
-    <penaltyregime>10, 20, ...</penaltyregime>
-    <precheck>0</precheck>
-    <hidecheck>0</hidecheck>
-    <showsource>0</showsource>
-    <answerboxlines>5</answerboxlines>
-    <answerboxcolumns>100</answerboxcolumns>
-    <answerpreload></answerpreload>
-    <globalextra></globalextra>
-    <useace></useace>
-    <resultcolumns></resultcolumns>
-    <template><![CDATA[import subprocess
+#CR_TEMPLATE
+import subprocess
 
 script = """{{ TEST.testcode | e('py') }}""" + '\n' + """{{ STUDENT_ANSWER | e('py') }}"""
 input = """{{ TEST.stdin | e('py') }}"""
@@ -48,80 +13,38 @@ with open('__prog__.sh', 'w') as outfile:
     outfile.write(script)
 
 subprocess.run(['/bin/bash', '__prog__.sh'], text=True, input=input)
-  
+#END CR_TEMPLATE
 
+#CR_PRELOAD
+#END CR_PRELOAD
 
-]]></template>
-    <iscombinatortemplate>0</iscombinatortemplate>
-    <allowmultiplestdins></allowmultiplestdins>
-    <answer><![CDATA[{"answer_code":["ls *.txt"],"test_code":[""],"show_hide":[""],"prefix_ans":["1"]}]]></answer>
-    <validateonsave>1</validateonsave>
-    <testsplitterre></testsplitterre>
-    <language></language>
-    <acelang>sh</acelang>
-    <sandbox></sandbox>
-    <grader></grader>
-    <cputimelimitsecs></cputimelimitsecs>
-    <memlimitmb></memlimitmb>
-    <sandboxparams></sandboxparams>
-    <templateparams></templateparams>
-    <hoisttemplateparams>1</hoisttemplateparams>
-    <extractcodefromjson>1</extractcodefromjson>
-    <templateparamslang>None</templateparamslang>
-    <templateparamsevalpertry>0</templateparamsevalpertry>
-    <templateparamsevald>{}</templateparamsevald>
-    <twigall>0</twigall>
-    <uiplugin></uiplugin>
-    <uiparameters></uiparameters>
-    <attachments>0</attachments>
-    <attachmentsrequired>0</attachmentsrequired>
-    <maxfilesize>10240</maxfilesize>
-    <filenamesregex></filenamesregex>
-    <filenamesexplain></filenamesexplain>
-    <displayfeedback>1</displayfeedback>
-    <giveupallowed>0</giveupallowed>
-    <prototypeextra></prototypeextra>
-    <testcases>
-      <testcase testtype="0" useasexample="1" hiderestiffail="0" mark="1.0000000" >
-      <testcode>
-                <text>touch thing.txt
+#CR_ANSWER
+{"answer_code":["ls *.txt"],"test_code":[""],"show_hide":[""],"prefix_ans":["1"]}
+#END CR_ANSWER
+
+#CR_CASE_CODE
+touch thing.txt
 touch wrong.ext
-touch another.txt</text>
-      </testcode>
-      <stdin>
-                <text></text>
-      </stdin>
-      <expected>
-                <text>another.txt
-thing.txt</text>
-      </expected>
-      <extra>
-                <text></text>
-      </extra>
-      <display>
-                <text>SHOW</text>
-      </display>
-    </testcase>
-      <testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0000000" >
-      <testcode>
-                <text>touch dumbo2.txt
-touch dumbo1.txt</text>
-      </testcode>
-      <stdin>
-                <text></text>
-      </stdin>
-      <expected>
-                <text>dumbo1.txt
-dumbo2.txt</text>
-      </expected>
-      <extra>
-                <text></text>
-      </extra>
-      <display>
-                <text>SHOW</text>
-      </display>
-    </testcase>
-    </testcases>
-  </question>
+touch another.txt
+#END CR_CASE_CODE
+#CR_CASE_CODE
+touch dumbo2.txt
+touch dumbo1.txt
+#END CR_CASE_CODE
 
-</quiz>
+#CR_CASE_MARK 1.0
+#CR_CASE_MARK 1.0
+
+#CR_CASE_EXPECTED_LONG
+another.txt
+thing.txt
+#END CR_CASE_EXPECTED_LONG 
+#CR_CASE_EXPECTED_LONG
+dumbo1.txt
+dumbo2.txt
+#END CR_CASE_EXPECTED_LONG 
+
+#CR_USE_EXAMPLE 1
+#CR_USE_EXAMPLE 0
+
+#TAGS example bash template
