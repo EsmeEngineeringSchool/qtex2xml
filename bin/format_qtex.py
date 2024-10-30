@@ -20,9 +20,12 @@ entrees={'CAT'                   :{'long':False,'translation':True ,'multiple':F
          'ANSW_FBACK'            :{'long':False,'translation':True,'multiple':True},
          'TAGS'                  :{'long':False,'translation':False,'multiple':False},
          'CR_PRELOAD'            :{'long':True ,'translation':False,'multiple':False},
+         'CR_TEMPLATE'           :{'long':True ,'translation':False,'multiple':False},
          'CR_ANSWER'             :{'long':True ,'translation':False,'multiple':False},
          'CR_CASE_MARK'          :{'long':False,'translation':False,'multiple':True},
          'CR_CASE_CODE'          :{'long':True ,'translation':False,'multiple':True},
+         'CR_CASE_DISPLAY'       :{'long':False,'translation':False,'multiple':True},
+         'CR_CASE_EXTRA'         :{'long':False,'translation':False,'multiple':True},
          'CR_CASE_ASEXAMPLE'     :{'long':False,'translation':False,'multiple':True},
          'CR_CASE_EXPECTED'      :{'long':False,'translation':False,'multiple':True},
          'CR_CASE_EXPECTED_LONG' :{'long':True ,'translation':False,'multiple':True}
