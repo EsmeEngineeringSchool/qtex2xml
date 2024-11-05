@@ -9,18 +9,23 @@ from format_qtex import entrees
 # quelques fonctions de manipulations de chaines partagées avec l'autre script
 from string_ import get,mult,grep
 
+CR_CASE_DISPLAY=["SHOW", "HIDE", "HIDE_IF_SUCCEED","HIDE_IF_FAIL"]
+
 # entrees par type 
 globalinfo      = ['TYPE','NAME',('Q','QLONG'),'GFBACK','TAGS']
 multichoiceinfo = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
 numericalinfo   = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
-coderunnerinfo  = ['CR_TEMPLATE', 'CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
-                   'CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'), 'CR_CASE_DISPLAY','CR_CASE_EXTRA','CR_CASE_ASEXAMPLE']
+coderunnerinfo  = ['CR_ACELANG','CR_TWIGALL','CR_PENALTYREGIME',
+                   'CR_ISCOMBINATORTEMPLATE','CR_TEMPLATE', 'CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
+                   'CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'), 'CR_CASE_DISPLAY','CR_CASE_STDIN',
+                   'CR_CASE_EXTRA','CR_CASE_ASEXAMPLE']
 infos={"global" : globalinfo , "multichoice" : multichoiceinfo, "numerical": numericalinfo, "coderunner" : coderunnerinfo}
 
 # entrées multiples exigées de même taille et au moins une doit être présente
 exigences={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
            "numerical"   :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
-           "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED','CR_CASE_DISPLAY','CR_CASE_EXTRA']}
+           "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED',
+                            'CR_CASE_DISPLAY','CR_CASE_STDIN','CR_CASE_EXTRA']}
 
 #--------------------------------------------------------------------------------------------------
 # balise xml d'ouverture (openning) 
@@ -79,7 +84,6 @@ def octextcdataxml(nombalise,*args,cdata="",indent=0):
     return oxml(nombalise,*args)+textcdataxml(cdata)+cxml(nombalise) if not indent \
       else oxml(nombalise,*args)+'\n'+(indent+1)*'\t'+textcdataxml(cdata)+'\n'+indent*'\t'+cxml(nombalise)
 
-
 #--------------------------------------------------------------------------------------------------
 # answer in xml (multichoice,numerical)
 def answerxml(data,outfile,indent=0):
@@ -93,10 +97,15 @@ def answerxml(data,outfile,indent=0):
 #--------------------------------------------------------------------------------------------------
 # answer in xml (coderunner) 
 def testcasexml(data,outfile,indent=0):
-    mark,testcode,useasexample,expected,display,extra=data
-    outfile.write(indent*'\t'+oxml("testcase",("testtype","0"),("useasexample","0"),("hiderestiffail","0"),("mark",mark))+'\n')
+    testcode,stdin,expected,extra,mark,display,useasexample=data
+    # la balise testcase
+    outfile.write(indent*'\t'+oxml("testcase",
+                                   ("testtype","0"),
+                                   ("useasexample",useasexample),
+                                   ("hiderestiffail","0"),
+                                   ("mark",mark))+'\n')
     outfile.write((indent+1)*'\t'+octextcdataxml("testcode",cdata=testcode,indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextxml("stdin",text="",indent=indent+1))
+    outfile.write((indent+1)*'\t'+octextxml("stdin",text=stdin,indent=indent+1))
     outfile.write((indent+1)*'\t'+octextcdataxml("expected",cdata=expected,indent=indent+1))
     outfile.write((indent+1)*'\t'+octextxml("extra",text=extra,indent=indent+1))
     outfile.write((indent+1)*'\t'+octextxml("display",text=display,indent=indent+1))
@@ -134,7 +143,7 @@ def add_question_xml(info,outfile,indent=0):
     outfile.write(indent*'\t'+oxml("question",("type",info["TYPE"]))+'\n')
     outfile.write((indent+1)*'\t'+octextxml("name",text=info["NAME"]))
     outfile.write((indent+1)*'\t'+octextcdataxml("questiontext",("format","html"),cdata=info["Q"],indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextxml("generalfeedback",("format","html"),text=info["GFBACK"]))
+    outfile.write((indent+1)*'\t'+octextcdataxml("generalfeedback",("format","html"),cdata=info["GFBACK"]))
     outfile.write((indent+1)*'\t'+ocxml("defaultgrade",valeur="1.0000000")) 
     outfile.write((indent+1)*'\t'+ocxml("penalty",valeur="0.3333333"))
     outfile.write((indent+1)*'\t'+ocxml("hidden",valeur="0"))
@@ -166,7 +175,7 @@ def add_question_xml(info,outfile,indent=0):
          outfile.write((indent+1)*'\t'+ocxml("coderunnertype",valeur="python3"))
          outfile.write((indent+1)*'\t'+ocxml("prototypetype",valeur="0"))
          outfile.write((indent+1)*'\t'+ocxml("allornothing",valeur="1"))
-         outfile.write((indent+1)*'\t'+ocxml("penaltyregime",valeur="10,20, ..."))
+         outfile.write((indent+1)*'\t'+ocxml("penaltyregime",valeur=info["CR_PENALTYREGIME"]))
          outfile.write((indent+1)*'\t'+ocxml("precheck",valeur="0"))
          outfile.write((indent+1)*'\t'+ocxml("hidecheck",valeur="0"))
          outfile.write((indent+1)*'\t'+ocxml("showsource",valeur="0"))
@@ -177,13 +186,13 @@ def add_question_xml(info,outfile,indent=0):
          outfile.write((indent+1)*'\t'+ocxml("useace",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("resultcolumns",valeur=""))
          outfile.write((indent+1)*'\t'+occdataxml("template",cdata=info["CR_TEMPLATE"]))
-         outfile.write((indent+1)*'\t'+ocxml("iscombinatortemplate",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("iscombinatortemplate",valeur=info["CR_ISCOMBINATORTEMPLATE"]))
          outfile.write((indent+1)*'\t'+ocxml("allowmultiplestdins",valeur=""))
          outfile.write((indent+1)*'\t'+occdataxml("answer",cdata=info["CR_ANSWER"],indent=indent+1))
          outfile.write((indent+1)*'\t'+ocxml("validateonsave",valeur="1"))
          outfile.write((indent+1)*'\t'+ocxml("testsplitterre",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("language",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("acelang",valeur=""))
+         outfile.write((indent+1)*'\t'+ocxml("acelang",valeur=info["CR_ACELANG"]))
          outfile.write((indent+1)*'\t'+ocxml("sandbox",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("grader",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("cputimelimitsecs",valeur=""))
@@ -195,7 +204,7 @@ def add_question_xml(info,outfile,indent=0):
          outfile.write((indent+1)*'\t'+ocxml("templateparamslang",valeur="None"))
          outfile.write((indent+1)*'\t'+ocxml("templateparamsevalpertry",valeur="0"))
          outfile.write((indent+1)*'\t'+ocxml("templateparamsevald",valeur="{}"))
-         outfile.write((indent+1)*'\t'+ocxml("twigall",valeur="0"))
+         outfile.write((indent+1)*'\t'+ocxml("twigall",valeur=info["CR_TWIGALL"]))
          outfile.write((indent+1)*'\t'+ocxml("uiplugin",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("uiparameters",valeur=""))
          outfile.write((indent+1)*'\t'+ocxml("attachments",valeur="0"))
@@ -222,13 +231,14 @@ def add_question_xml(info,outfile,indent=0):
     # -----------------------------------------
     if info["TYPE"] == "coderunner":
         outfile.write((indent+1)*'\t'+oxml("testcases")+'\n')
-        #mark,testcode,useasexample,expected,display,extra
-        testcases=list(zip(info["CR_CASE_MARK"],
-                           info["CR_CASE_CODE"],
-                           info["CR_CASE_ASEXAMPLE"],
+        #testcode,stdin,expected,extra,mark,display,useasexample=data
+        testcases=list(zip(info["CR_CASE_CODE"],
+                           info["CR_CASE_STDIN"],
                            info["CR_CASE_EXPECTED"],
+                           info["CR_CASE_EXTRA"], 
+                           info["CR_CASE_MARK"],
                            info["CR_CASE_DISPLAY"],
-                           info["CR_CASE_EXTRA"])) 
+                           info["CR_CASE_ASEXAMPLE"]))
         for testcase in testcases:
             testcasexml(testcase,outfile,indent=1)
         outfile.write(indent*'\t'+cxml("testcases"))
@@ -271,11 +281,11 @@ def quellecle(cle,data):
 def default_values_before(data):
     info={}
     qtype=get("TYPE",data)
-    if not any([grep(cle,data) for cle in exigences[qtype]]) :
-        print(f"all the keys are missing for {qtype} : {exigences[qtype]}")
-        sys.exit()
-    else:
-        m=mult(exigences[qtype][[grep(cle,data) for cle in exigences[qtype]].index(True)],data)
+
+    assert any([grep(cle,data) for cle in exigences[qtype]]),\
+           f"some of the keys are missing for {qtype} : {exigences[qtype]} {[grep(cle,data) for cle in exigences[qtype]]}"
+
+    m=mult(exigences[qtype][[grep(cle,data) for cle in exigences[qtype]].index(True)],data)
 
     match qtype :
         case "multichoice" | "numerical" :
@@ -283,13 +293,24 @@ def default_values_before(data):
             if not grep('ANSW_TEXT',data)  : info['ANSW_TEXT']=[""]*m
             if not grep('ANSW_GRAD',data)  : info['ANSW_GRAD']=["0"]*m
         case "coderunner" :
-            if not grep("CR_TEMPLATE",data)       : info["CR_TEMPLATE"]=""
-            if not grep("CR_CASE_ASEXAMPLE",data) : info["CR_CASE_ASEXAMPLE"] =["0"]*m
-            if not grep("CR_CASE_MARK",data)      : info["CR_CASE_MARK"] = ["1.0"]*m
-            if not grep("CR_CASE_DISPLAY",data)   : info["CR_CASE_DISPLAY"] = ["SHOW"]*m
-            if not grep("CR_CASE_EXTRA",data)     : info["CR_CASE_EXTRA"] = [""]*m
+            if not grep("CR_TEMPLATE",data)              : info["CR_TEMPLATE"]=""
+            if not grep("CR_ACELANG",data)               : info["CR_ACELANG"]=""
+            if not grep("CR_TWIGALL",data)               : info["CR_TWIGALL"]="0"
+            if not grep("CR_ISCOMBINATORTEMPLATE",data)  : info["CR_ISCOMBINATORTEMPLATE"]=""
+            if not grep("CR_PENALTYREGIME",data)         : info["CR_PENALTYREGIME"]="0,5,10,..."
+            if not grep("CR_CASE_ASEXAMPLE",data)        : info["CR_CASE_ASEXAMPLE"] =["0"]*m
+            if not grep("CR_CASE_MARK",data)             : info["CR_CASE_MARK"] = ["1.0"]*m
+            if not grep("CR_CASE_EXPECTED",data) and \
+                   not grep("CR_CASE_EXPECTED_LONG",data)    : info["CR_CASE_EXPECTED"] = [""]*m
+            if not grep("CR_CASE_DISPLAY",data)          : info["CR_CASE_DISPLAY"] = ["SHOW"]*m
+            if not grep("CR_CASE_STDIN",data)            : info["CR_CASE_STDIN"] = [""]*m
+            if not grep("CR_CASE_EXTRA",data)            : info["CR_CASE_EXTRA"] = [""]*m
             info["answerboxlines"]=str(int((get("CR_ANSWER",data).count("\n")+1)*1.2))
     return info
+
+def check_values_after(info):
+    for v in info["CR_CASE_DISPLAY"]:
+        assert v in CR_CASE_DISPLAY, f"{v} is not in CR_CASE_DISPLAY\nCheck your input"
 
 
 #--------------------------------------------------------------------------------------------------
@@ -315,6 +336,7 @@ def readqtex(file):
                 info[cle[0]].extend(get(cc,data))
             else:
                 info[cle[0]]=get(cc,data)
+    check_values_after(info)
     return info
 
 #--------------------------------------------------------------------------------------------------
@@ -347,7 +369,7 @@ if __name__=="__main__":
     for file in filespath :
         print(file.name,file=sys.stderr,end=' ')
         info=readqtex(file)
-        print(f"{info['TYPE']} size info: {len(info)}",file=sys.stderr)
+        print(f"\n\ttype : {info['TYPE']}\n\tname : {info['NAME']} ",file=sys.stderr)
         add_question_xml(info,outfile)
 
     footertest_xml(outfile=outfile)
