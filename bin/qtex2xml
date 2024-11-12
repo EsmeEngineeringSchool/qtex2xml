@@ -301,7 +301,7 @@ def default_values_before(data):
             if not grep("CR_CASE_ASEXAMPLE",data)        : info["CR_CASE_ASEXAMPLE"] =["0"]*m
             if not grep("CR_CASE_MARK",data)             : info["CR_CASE_MARK"] = ["1.0"]*m
             if not grep("CR_CASE_EXPECTED",data) and \
-                   not grep("CR_CASE_EXPECTED_LONG",data)    : info["CR_CASE_EXPECTED"] = [""]*m
+               not grep("CR_CASE_EXPECTED_LONG",data)    : info["CR_CASE_EXPECTED"] = [""]*m
             if not grep("CR_CASE_DISPLAY",data)          : info["CR_CASE_DISPLAY"] = ["SHOW"]*m
             if not grep("CR_CASE_STDIN",data)            : info["CR_CASE_STDIN"] = [""]*m
             if not grep("CR_CASE_EXTRA",data)            : info["CR_CASE_EXTRA"] = [""]*m
@@ -309,8 +309,13 @@ def default_values_before(data):
     return info
 
 def check_values_after(info):
-    for v in info["CR_CASE_DISPLAY"]:
-        assert v in CR_CASE_DISPLAY, f"{v} is not in CR_CASE_DISPLAY\nCheck your input"
+    match info["TYPE"] :
+        case "coderunner" :
+            for v in info["CR_CASE_DISPLAY"]:
+                assert v in CR_CASE_DISPLAY, f"{v} is not in CR_CASE_DISPLAY\nCheck your input"
+        case _ :
+            return
+
 
 
 #--------------------------------------------------------------------------------------------------
