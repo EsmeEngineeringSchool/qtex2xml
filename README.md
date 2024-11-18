@@ -1,5 +1,5 @@
 # qtex2xml
-qtex2xml permet de produire des fichiers xml de questions de différents types (Coderunner, multichoice, ... ) de Moodle
+qtex2xml permet de produire des fichiers xml de questions de différents types (Coderunner, multichoice, Numerical, Stack ) de Moodle
 
 ## Exemple d'utilisation : 
 
@@ -28,11 +28,18 @@ Exemple d'utilisation :
 Pour l'instant quelques types de questions Moodle sont pris en charge par les scripts 
 `qtex2xml` et `transqtex` :
 
+0. category
 1. multichoice
 2. numerical
 3. coderunner (en phase de test)
+3. stack      (en phase de test)
 
 Voici les templates de ces types de question : 
+## "category"
+```
+TYPE category
+NAME [Nom de la catégorie]
+```
 ## "multichoice"
 ```
 #TYPE multichoice
@@ -93,6 +100,17 @@ print(f(5))
 #CR_CASE_MARK 1.0
 #CR_CASE_MARK 1.0
 #TAGS [TAGS associés à la question] 
+```
+## "stack"
+```
+#TYPE stack
+#NAME [Nom de la question]
+#GFBACK Merci d'avoir pris le temps de répondre à cette question.
+#QLONG
+#END QLONG
+#STACK_QVAR 
+#SFBACK 
+#TAGS
 ```
 
 ### Quelques entrees :
