@@ -6,8 +6,7 @@
         translation : l'entrée est traduite ou pas lorsquelle est lue par le script transqtex
         multiple    : si elle peut être répété dans le fichier
 """
-entrees={'CAT'                     :{'long':False,'translation':True ,'multiple':False},
-         'TYPE'                    :{'long':False,'translation':False,'multiple':False},
+entrees={'TYPE'                    :{'long':False,'translation':False,'multiple':False},
          'NAME'                    :{'long':False,'translation':False,'multiple':False},
          'QLONG'                   :{'long':True ,'translation':True ,'multiple':False},
          'Q'                       :{'long':False,'translation':True ,'multiple':False},
@@ -34,5 +33,6 @@ entrees={'CAT'                     :{'long':False,'translation':True ,'multiple'
          'CR_CASE_EXTRA'           :{'long':False,'translation':False,'multiple':True },
          'CR_CASE_ASEXAMPLE'       :{'long':False,'translation':False,'multiple':True },
          'CR_CASE_EXPECTED'        :{'long':False,'translation':False,'multiple':True },
-         'CR_CASE_EXPECTED_LONG'   :{'long':True ,'translation':False,'multiple':True }
+         'CR_CASE_EXPECTED_LONG'   :{'long':True ,'translation':False,'multiple':True },
+         'STACK_QVAR'              :{'long':False,'translation':False,'multiple':False}
 } 

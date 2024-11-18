@@ -7,26 +7,28 @@ sys.path.append(os.path.abspath("/home/dev/qtex2xml/bin"))
 # le format (les types d'entrees) est partagé avec l'autre script
 from format_qtex import entrees 
 # quelques fonctions de manipulations de chaines partagées avec l'autre script
-from string_ import get,mult,grep
+from string_ import get,mult,grep,tab
 
 CR_CASE_DISPLAY=["SHOW", "HIDE", "HIDE_IF_SUCCEED","HIDE_IF_FAIL"]
 
 # entrees par type 
-globalinfo      = ['TYPE','NAME',('Q','QLONG'),('GFBACK','GFBACKLONG'),'TAGS']
+globalinfo      = ['TYPE','NAME']
+questioninfo    = [('Q','QLONG'),('GFBACK','GFBACKLONG'),'TAGS']
 multichoiceinfo = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
 numericalinfo   = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
 coderunnerinfo  = ['CR_ACELANG','CR_TWIGALL','CR_PENALTYREGIME',
                    'CR_ISCOMBINATORTEMPLATE','CR_TEMPLATE', 'CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
                    'CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'), 'CR_CASE_DISPLAY','CR_CASE_STDIN',
                    'CR_CASE_EXTRA','CR_CASE_ASEXAMPLE']
-infos={"global" : globalinfo , "multichoice" : multichoiceinfo, "numerical": numericalinfo, "coderunner" : coderunnerinfo}
+stackinfo       = ['STACK_QVAR']
+infos={"global" : globalinfo , "question" : questioninfo, "multichoice" : multichoiceinfo, "numerical": numericalinfo, "coderunner" : coderunnerinfo , "stack" : stackinfo}
 
 # entrées multiples exigées de même taille et au moins une doit être présente
-exigences={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
-           "numerical"   :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
-           "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED',
-                            'CR_CASE_DISPLAY','CR_CASE_STDIN','CR_CASE_EXTRA']}
-
+types_with_requirements = ["multichoice","numerical","coderunner"]
+same_number={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
+             "numerical"   :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
+             "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED',
+                              'CR_CASE_DISPLAY','CR_CASE_STDIN','CR_CASE_EXTRA']}
 #--------------------------------------------------------------------------------------------------
 # balise xml d'ouverture (openning) 
 # les arguments de *args modifie les options de la balise
@@ -40,7 +42,6 @@ def oxml(nombalise,*args,bal=""):
         return out+f"{bal}>"
     else:
         return f"<{nombalise}>"
-
 #--------------------------------------------------------------------------------------------------
 # balise xml de fermeture (closing)
 def cxml(nombalise):
@@ -86,179 +87,278 @@ def octextcdataxml(nombalise,*args,cdata="",indent=0):
 
 #--------------------------------------------------------------------------------------------------
 # answer in xml (multichoice,numerical)
-def answerxml(data,outfile,indent=0):
+def xml_answer(data,outfile,indent=0):
     fraction,text,feedback=data
-    outfile.write(indent*'\t'+oxml("answer",("fraction",fraction),("format","html"))+'\n')
-    outfile.write((indent+1)*'\t'+textxml(text)+'\n')
-    outfile.write((indent+1)*'\t'+octextxml("feedback",("format","html"),text=feedback,indent=indent+1))
-    outfile.write((indent+1)*'\t'+ocxml("tolerance",valeur="0.0"))
-    outfile.write(indent*'\t'+cxml("answer"))
+    outfile.write(tab(indent)+oxml("answer",("fraction",fraction),("format","html"))+'\n')
+    outfile.write(tab(indent+1)+textxml(text)+'\n')
+    outfile.write(tab(indent+1)+octextxml("feedback",("format","html"),text=feedback,indent=indent+1))
+    outfile.write(tab(indent+1)+ocxml("tolerance",valeur="0.0"))
+    outfile.write(tab(indent)+cxml("answer"))
 
 #--------------------------------------------------------------------------------------------------
-# answer in xml (coderunner) 
-def testcasexml(data,outfile,indent=0):
+# testcase of coderunner in xml
+def xml_testcase(data,outfile,indent=0):
     testcode,stdin,expected,extra,mark,display,useasexample=data
     # la balise testcase
-    outfile.write(indent*'\t'+oxml("testcase",
-                                   ("testtype","0"),
-                                   ("useasexample",useasexample),
-                                   ("hiderestiffail","0"),
-                                   ("mark",mark))+'\n')
-    outfile.write((indent+1)*'\t'+octextcdataxml("testcode",cdata=testcode,indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextxml("stdin",text=stdin,indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextcdataxml("expected",cdata=expected,indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextxml("extra",text=extra,indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextxml("display",text=display,indent=indent+1))
-    outfile.write(indent*'\t'+cxml("testcase"))
-    pass
-
-#--------------------------------------------------------------------------------------------------
-# category header in xml file
-def category_xml(category,outfile,indent=0):
-    outfile.write(indent*'\t'+"<!-- question: 0  -->"+'\n')
-    outfile.write(indent*'\t'+oxml("question",("type","category"))+'\n')
-    outfile.write((indent+1)*'\t'+octextxml("category",text=category))
-    outfile.write((indent+1)*'\t'+octextxml("info",("format","html"),text=""))
-    outfile.write((indent+1)*'\t'+ocxml("idnumber"))
-    outfile.write(indent*'\t'+cxml("question"))
+    outfile.write(tab(indent)+oxml("testcase",
+                          ("testtype","0"),
+                          ("useasexample",useasexample),
+                          ("hiderestiffail","0"),
+                          ("mark",mark))+'\n')
+    outfile.write(tab(indent+1)+octextcdataxml("testcode",cdata=testcode,indent=indent+1))
+    outfile.write(tab(indent+1)+octextxml("stdin",text=stdin,indent=indent+1))
+    outfile.write(tab(indent+1)+octextcdataxml("expected",cdata=expected,indent=indent+1))
+    outfile.write(tab(indent+1)+octextxml("extra",text=extra,indent=indent+1))
+    outfile.write(tab(indent+1)+octextxml("display",text=display,indent=indent+1))
+    outfile.write(tab(indent)+cxml("testcase"))
 
 #--------------------------------------------------------------------------------------------------
 # header and footer d'un test au format xml
-def headertest_xml(outfile,indent=0):
-    outfile.write(indent*'\t'+oxml("xml",("version","1.0"),("encoding","UTF-8"),bal="?")+'\n')
-    outfile.write(indent*'\t'+oxml("quiz")+'\n')
+def xml_headerquiz(outfile,indent=0):
+    outfile.write(tab(indent)+oxml("xml",("version","1.0"),("encoding","UTF-8"),bal="?")+'\n')
+    outfile.write(tab(indent)+oxml("quiz")+'\n')
 #--------------------------------------------------------------------------------------------------
-def footertest_xml(outfile,indent=0):
-    outfile.write(indent*'\t'+cxml("quiz"))
+def xml_footerquiz(outfile,indent=0):
+    outfile.write(tab(indent)+cxml("quiz"))
+#--------------------------------------------------------------------------------------------------
+# category header in xml file
+def xml_category_globalinfo(info,outfile,indent):
+    outfile.write(tab(indent)+octextxml("category",text=info["NAME"]))
+    outfile.write(tab(indent)+octextxml("info",("format","html"),text=""))
+    outfile.write(tab(indent)+ocxml("idnumber"))
+#--------------------------------------------------------------------------------------------------
+# write pour tous les types sauf category
+def xml_globalinfo(info,outfile,indent):
+    outfile.write(tab(indent)+octextxml("name",text=info["NAME"]))
+    outfile.write(tab(indent)+octextcdataxml("questiontext",("format","html"),cdata=info["Q"],indent=indent))
+    outfile.write(tab(indent)+octextcdataxml("generalfeedback",("format","html"),cdata=info["GFBACK"]))
+    outfile.write(tab(indent)+ocxml("defaultgrade",valeur="1.0000000"))
+    outfile.write(tab(indent)+ocxml("penalty",valeur="0.3333333"))
+    outfile.write(tab(indent)+ocxml("hidden",valeur="0"))
+    outfile.write(tab(indent)+ocxml("idnumber"))
+#--------------------------------------------------------------------------------------------------
+# write pour multichoice
+def xml_multichoice_globalinfo(info,outfile,indent):
+    outfile.write(tab(indent)+ocxml("single",valeur="false"))
+    outfile.write(tab(indent)+ocxml("shuffleanswers",valeur="true"))
+    outfile.write(tab(indent)+ocxml("answernumbering",valeur="123"))
+    outfile.write(tab(indent)+ocxml("showstandardinstruction",valeur="0"))
+    outfile.write(tab(indent)+octextxml("correctfeedback",("format","html"),\
+                                  text=info['CFBACK'],indent=indent))
+    outfile.write(tab(indent)+octextxml("partiallycorrectfeedback",("format","html"),\
+                                  text=info['PFBACK'],indent=indent))
+    outfile.write(tab(indent)+octextxml("incorrectfeedback",("format","html"),\
+                                  text=info['IFBACK'],indent=indent))
+    outfile.write(tab(indent)+"<shownumcorrect/>"+'\n')
+#--------------------------------------------------------------------------------------------------
+# ecrire globalinfo pour numerical 
+def xml_numerical_globalinfo(info,outfile,indent):
+    outfile.write(tab(indent)+ocxml("unitgradingtype",valeur="0"))
+    outfile.write(tab(indent)+ocxml("unitpenalty",valeur="0"))
+    outfile.write(tab(indent)+ocxml("showunits",valeur="3"))
+    outfile.write(tab(indent)+ocxml("unitsleft",valeur="0"))
+
+#--------------------------------------------------------------------------------------------------
+# ecrire globalinfo pour coderunner
+def xml_coderunner_globalinfo(info,outfile,indent):
+    outfile.write(tab(indent)+ocxml("coderunnertype",valeur="python3"))
+    outfile.write(tab(indent)+ocxml("prototypetype",valeur="0"))
+    outfile.write(tab(indent)+ocxml("allornothing",valeur="1"))
+    outfile.write(tab(indent)+ocxml("penaltyregime",valeur=info["CR_PENALTYREGIME"]))
+    outfile.write(tab(indent)+ocxml("precheck",valeur="0"))
+    outfile.write(tab(indent)+ocxml("hidecheck",valeur="0"))
+    outfile.write(tab(indent)+ocxml("showsource",valeur="0"))
+    outfile.write(tab(indent)+ocxml("answerboxlines",valeur=info["answerboxlines"]))
+    outfile.write(tab(indent)+ocxml("answerboxcolumns",valeur="100"))
+    outfile.write(tab(indent)+occdataxml("answerpreload",cdata=info["CR_PRELOAD"],indent=indent))
+    outfile.write(tab(indent)+ocxml("globalextra",valeur=""))
+    outfile.write(tab(indent)+ocxml("useace",valeur=""))
+    outfile.write(tab(indent)+ocxml("resultcolumns",valeur=""))
+    outfile.write(tab(indent)+occdataxml("template",cdata=info["CR_TEMPLATE"]))
+    outfile.write(tab(indent)+ocxml("iscombinatortemplate",valeur=info["CR_ISCOMBINATORTEMPLATE"]))
+    outfile.write(tab(indent)+ocxml("allowmultiplestdins",valeur=""))
+    outfile.write(tab(indent)+occdataxml("answer",cdata=info["CR_ANSWER"],indent=indent))
+    outfile.write(tab(indent)+ocxml("validateonsave",valeur="1"))
+    outfile.write(tab(indent)+ocxml("testsplitterre",valeur=""))
+    outfile.write(tab(indent)+ocxml("language",valeur=""))
+    outfile.write(tab(indent)+ocxml("acelang",valeur=info["CR_ACELANG"]))
+    outfile.write(tab(indent)+ocxml("sandbox",valeur=""))
+    outfile.write(tab(indent)+ocxml("grader",valeur=""))
+    outfile.write(tab(indent)+ocxml("cputimelimitsecs",valeur=""))
+    outfile.write(tab(indent)+ocxml("memlimitmb",valeur=""))
+    outfile.write(tab(indent)+ocxml("sandboxparams",valeur=""))
+    outfile.write(tab(indent)+ocxml("templateparams",valeur=""))
+    outfile.write(tab(indent)+ocxml("hoisttemplateparams",valeur="1"))
+    outfile.write(tab(indent)+ocxml("extractcodefromjson",valeur="1"))
+    outfile.write(tab(indent)+ocxml("templateparamslang",valeur="None"))
+    outfile.write(tab(indent)+ocxml("templateparamsevalpertry",valeur="0"))
+    outfile.write(tab(indent)+ocxml("templateparamsevald",valeur="{}"))
+    outfile.write(tab(indent)+ocxml("twigall",valeur=info["CR_TWIGALL"]))
+    outfile.write(tab(indent)+ocxml("uiplugin",valeur=""))
+    outfile.write(tab(indent)+ocxml("uiparameters",valeur=""))
+    outfile.write(tab(indent)+ocxml("attachments",valeur="0"))
+    outfile.write(tab(indent)+ocxml("attachmentsrequired",valeur="0"))
+    outfile.write(tab(indent)+ocxml("maxfilesize",valeur="10240"))
+    outfile.write(tab(indent)+ocxml("filenamesregex",valeur=""))
+    outfile.write(tab(indent)+ocxml("filenamesexplain",valeur=""))
+    outfile.write(tab(indent)+ocxml("displayfeedback",valeur="1"))
+    outfile.write(tab(indent)+ocxml("giveupallowed",valeur="0"))
+    outfile.write(tab(indent)+ocxml("prototypeextra",valeur=""))
+
+#--------------------------------------------------------------------------------------------------
+# ecrire testcases pour coderunner
+def xml_coderunner_testcases(info,outfile,indent):
+    testcases=list(zip(info["CR_CASE_CODE"],
+                       info["CR_CASE_STDIN"],
+                       info["CR_CASE_EXPECTED"],
+                       info["CR_CASE_EXTRA"], 
+                       info["CR_CASE_MARK"],
+                       info["CR_CASE_DISPLAY"],
+                       info["CR_CASE_ASEXAMPLE"]))
+    outfile.write(tab(indent)+oxml("testcases")+'\n')
+    for testcase in testcases:  
+        xml_testcase(testcase,outfile,indent=indent)
+    outfile.write(tab(indent)+cxml("testcases"))
+#--------------------------------------------------------------------------------------------------
+def xml_stack_globalinfo(info,outfile,indent):
+    outfile.write(tab(indent)+octextxml("stackversion",text="2023060500",indent=indent))
+    outfile.write(tab(indent)+octextxml("questionvariables",text=info["STACK_QVAR"],indent=indent))
+    outfile.write(tab(indent)+octextxml("specificfeedback",("format","html"),text="[[feedback:prt1]]",indent=indent))
+    outfile.write(tab(indent)+octextxml("questionnote",("format","html"),text="",indent=indent))
+    outfile.write(tab(indent)+octextxml("questiondescription",("format","html"),text="",indent=indent))
+    outfile.write(tab(indent)+ocxml("questionsimplify",valeur="1"))
+    outfile.write(tab(indent)+ocxml("assumepositive",valeur="0"))
+    outfile.write(tab(indent)+ocxml("assumereal",valeur="0"))
+    outfile.write(tab(indent)+ocxml("decimals",valeur="."))
+    outfile.write(tab(indent)+ocxml("scientificnotation",valeur="*10"))
+    outfile.write(tab(indent)+ocxml("multiplicationsign",valeur="cross"))
+    outfile.write(tab(indent)+ocxml("sqrtsign",valeur="1"))
+    outfile.write(tab(indent)+ocxml("complexno",valeur="i"))
+    outfile.write(tab(indent)+ocxml("inversetrig",valeur="arccos"))
+    outfile.write(tab(indent)+ocxml("logicsymbol",valeur="lang"))
+    outfile.write(tab(indent)+ocxml("matrixparens",valeur="["))
+    outfile.write(tab(indent)+ocxml("variantsselectionseed",valeur=""))
+#--------------------------------------------------------------------------------------------------
+def xml_stack_input(info,outfile,indent):
+    outfile.write(tab(indent)+oxml("input")+'\n')
+    outfile.write(tab(indent+1)+ocxml("name",valeur="ans1")) 
+    outfile.write(tab(indent+1)+ocxml("type",valeur="algebraic")) 
+    outfile.write(tab(indent+1)+ocxml("tans",valeur="sol")) 
+    outfile.write(tab(indent+1)+ocxml("boxsize",valeur="15")) 
+    outfile.write(tab(indent+1)+ocxml("strictsyntax",valeur="1")) 
+    outfile.write(tab(indent+1)+ocxml("insertstars",valeur="0")) 
+    outfile.write(tab(indent+1)+ocxml("syntaxhint",valeur="")) 
+    outfile.write(tab(indent+1)+ocxml("syntaxattribute",valeur="")) 
+    outfile.write(tab(indent+1)+ocxml("forbidwords",valeur="")) 
+    outfile.write(tab(indent+1)+ocxml("allowwords",valeur="")) 
+    outfile.write(tab(indent+1)+ocxml("forbidfloat",valeur="1")) 
+    outfile.write(tab(indent+1)+ocxml("requirelowestterms",valeur="0")) 
+    outfile.write(tab(indent+1)+ocxml("checkanswertype",valeur="0")) 
+    outfile.write(tab(indent+1)+ocxml("mustverify",valeur="1")) 
+    outfile.write(tab(indent+1)+ocxml("showvalidation",valeur="1")) 
+    outfile.write(tab(indent+1)+ocxml("options",valeur="")) 
+    outfile.write(tab(indent)+cxml("input"))
+#--------------------------------------------------------------------------------------------------
+def xml_stack_prt(info,outfile,indent):
+    # prt
+    outfile.write(tab(indent)+oxml("prt")+'\n')
+    outfile.write(tab(indent+1)+ocxml("name",valeur="prt1")) 
+    outfile.write(tab(indent+1)+ocxml("value",valeur="1.0000000")) 
+    outfile.write(tab(indent+1)+ocxml("autosimplify",valeur="1")) 
+    outfile.write(tab(indent+1)+ocxml("feedbackstyle",valeur="1")) 
+    outfile.write(tab(indent+1)+octextxml("feedbackvariables",text="",indent=indent+1))
+    #   node
+    outfile.write(tab(indent+1)+oxml("node")+'\n')
+    outfile.write(tab(indent+2)+ocxml("name",valeur="0"))
+    outfile.write(tab(indent+2)+ocxml("description",valeur=""))
+    outfile.write(tab(indent+2)+ocxml("answertest",valeur="AlgEquiv"))
+    outfile.write(tab(indent+2)+ocxml("sans",valeur="ans1"))
+    outfile.write(tab(indent+2)+ocxml("tans",valeur="sol"))
+    outfile.write(tab(indent+2)+ocxml("testoptions",valeur=""))
+    outfile.write(tab(indent+2)+ocxml("quiet",valeur="0"))
+    outfile.write(tab(indent+2)+ocxml("truescoremode",valeur="="))
+    outfile.write(tab(indent+2)+ocxml("truescore",valeur="1"))
+    outfile.write(tab(indent+2)+ocxml("truepenalty",valeur=""))
+    outfile.write(tab(indent+2)+ocxml("truenextnode",valeur="-1"))
+    outfile.write(tab(indent+2)+ocxml("trueanswernote",valeur="prt1-1-T"))
+    outfile.write(tab(indent+2)+octextxml("truefeedback",("format","html"),text="",indent=indent+2))
+    outfile.write(tab(indent+2)+ocxml("falsescoremode",valeur="="))
+    outfile.write(tab(indent+2)+ocxml("falsescore",valeur="0"))
+    outfile.write(tab(indent+2)+ocxml("falsepenalty",valeur=""))
+    outfile.write(tab(indent+2)+ocxml("falsenextnode",valeur="-1"))
+    outfile.write(tab(indent+2)+ocxml("falseanswernote",valeur="prt1-1-T"))
+    outfile.write(tab(indent+2)+octextxml("falsefeedback",("format","html"),text="",indent=indent+2))
+    outfile.write(tab(indent+1)+cxml("node"))
+    outfile.write(tab(indent)+cxml("prt"))
+#--------------------------------------------------------------------------------------------------
+def xml_stack_qtest(info,outfile,indent):
+    outfile.write(tab(indent)+oxml("qtest")+'\n')
+    outfile.write(tab(indent+1)+ocxml("testcase",valeur="1"))
+    outfile.write(tab(indent+1)+ocxml("description",valeur="Test case assuming the teacher's input gets full marks."))
+    outfile.write(tab(indent+1)+oxml("testinput")+'\n')
+    outfile.write(tab(indent+2)+ocxml("name",valeur="ans1"))
+    outfile.write(tab(indent+2)+ocxml("value",valeur="sol"))
+    outfile.write(tab(indent+1)+cxml("testinput"))
+    outfile.write(tab(indent+1)+oxml("expected")+'\n')
+    outfile.write(tab(indent+2)+ocxml("name",valeur="prt1"))
+    outfile.write(tab(indent+2)+ocxml("expectedscore",valeur="1.000000"))
+    outfile.write(tab(indent+2)+ocxml("expectedpenalty",valeur="1.000000"))
+    outfile.write(tab(indent+2)+ocxml("expectedanswernote",valeur="prt1-1-T"))
+    outfile.write(tab(indent+1)+cxml("expected"))
+    outfile.write(tab(indent)+cxml("qtest"))
 
 #--------------------------------------------------------------------------------------------------
 # question au format xml toutes les variables sont lues par readqtex()
 # info est dictionnaire avec toutes les entrées utiles
-def add_question_xml(info,outfile,indent=0):
+def xml_question(info,outfile,indent=0):
 
     questiontype=info["TYPE"]
+    # EN-TETE d'une question
+    outfile.write(tab(indent)+"<!-- question: gentestmoodle.py  -->"+'\n')
+    outfile.write(tab(indent)+oxml("question",("type",info["TYPE"]))+'\n')
 
-    # FOR ALL TYPES
-    outfile.write(indent*'\t'+"<!-- question: gentestmoodle.py  -->"+'\n')
-    outfile.write(indent*'\t'+oxml("question",("type",info["TYPE"]))+'\n')
-    outfile.write((indent+1)*'\t'+octextxml("name",text=info["NAME"]))
-    outfile.write((indent+1)*'\t'+octextcdataxml("questiontext",("format","html"),cdata=info["Q"],indent=indent+1))
-    outfile.write((indent+1)*'\t'+octextcdataxml("generalfeedback",("format","html"),cdata=info["GFBACK"]))
-    outfile.write((indent+1)*'\t'+ocxml("defaultgrade",valeur="1.0000000")) 
-    outfile.write((indent+1)*'\t'+ocxml("penalty",valeur="0.3333333"))
-    outfile.write((indent+1)*'\t'+ocxml("hidden",valeur="0"))
-    outfile.write((indent+1)*'\t'+ocxml("idnumber"))
+    # TOUS LES TYPES DE QUESTION sauf category (pas de contre exemple pour l'instant)
+    if info["TYPE"] != "category" :
+        xml_globalinfo(info,outfile,indent+1)
+    else :
+        xml_category_globalinfo(info,outfile,indent+1)
+    #MULTICHOICE ou NUMERICAL
+    if info["TYPE"] == "multichoice" or info["TYPE"] == "numerical" :
 
-    #MULTICHOICE
-    if info["TYPE"] == "multichoice" :
-        outfile.write((indent+1)*'\t'+ocxml("single",valeur="false"))
-        outfile.write((indent+1)*'\t'+ocxml("shuffleanswers",valeur="true"))
-        outfile.write((indent+1)*'\t'+ocxml("answernumbering",valeur="123"))
-        outfile.write((indent+1)*'\t'+ocxml("showstandardinstruction",valeur="0"))
-        outfile.write((indent+1)*'\t'+octextxml("correctfeedback",("format","html"),\
-                                     text=info['CFBACK'],indent=indent+1))
-        outfile.write((indent+1)*'\t'+octextxml("partiallycorrectfeedback",("format","html"),\
-                                     text=info['PFBACK'],indent=indent+1))
-        outfile.write((indent+1)*'\t'+octextxml("incorrectfeedback",("format","html"),\
-                                     text=info['IFBACK'],indent=indent+1))
-        outfile.write((indent+1)*'\t'+"<shownumcorrect/>"+'\n')
-
-    #NUMERICAL
-    if info["TYPE"] == "numerical" :
-        outfile.write((indent+1)*'\t'+ocxml("unitgradingtype",valeur="0"))
-        outfile.write((indent+1)*'\t'+ocxml("unitpenalty",valeur="0"))
-        outfile.write((indent+1)*'\t'+ocxml("showunits",valeur="3"))
-        outfile.write((indent+1)*'\t'+ocxml("unitsleft",valeur="0"))
-
-    #CODERUNNER
-    if info["TYPE"] == "coderunner" :
-         outfile.write((indent+1)*'\t'+ocxml("coderunnertype",valeur="python3"))
-         outfile.write((indent+1)*'\t'+ocxml("prototypetype",valeur="0"))
-         outfile.write((indent+1)*'\t'+ocxml("allornothing",valeur="1"))
-         outfile.write((indent+1)*'\t'+ocxml("penaltyregime",valeur=info["CR_PENALTYREGIME"]))
-         outfile.write((indent+1)*'\t'+ocxml("precheck",valeur="0"))
-         outfile.write((indent+1)*'\t'+ocxml("hidecheck",valeur="0"))
-         outfile.write((indent+1)*'\t'+ocxml("showsource",valeur="0"))
-         outfile.write((indent+1)*'\t'+ocxml("answerboxlines",valeur=info["answerboxlines"]))
-         outfile.write((indent+1)*'\t'+ocxml("answerboxcolumns",valeur="100"))
-         outfile.write((indent+1)*'\t'+occdataxml("answerpreload",cdata=info["CR_PRELOAD"],indent=indent+1))
-         outfile.write((indent+1)*'\t'+ocxml("globalextra",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("useace",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("resultcolumns",valeur=""))
-         outfile.write((indent+1)*'\t'+occdataxml("template",cdata=info["CR_TEMPLATE"]))
-         outfile.write((indent+1)*'\t'+ocxml("iscombinatortemplate",valeur=info["CR_ISCOMBINATORTEMPLATE"]))
-         outfile.write((indent+1)*'\t'+ocxml("allowmultiplestdins",valeur=""))
-         outfile.write((indent+1)*'\t'+occdataxml("answer",cdata=info["CR_ANSWER"],indent=indent+1))
-         outfile.write((indent+1)*'\t'+ocxml("validateonsave",valeur="1"))
-         outfile.write((indent+1)*'\t'+ocxml("testsplitterre",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("language",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("acelang",valeur=info["CR_ACELANG"]))
-         outfile.write((indent+1)*'\t'+ocxml("sandbox",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("grader",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("cputimelimitsecs",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("memlimitmb",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("sandboxparams",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("templateparams",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("hoisttemplateparams",valeur="1"))
-         outfile.write((indent+1)*'\t'+ocxml("extractcodefromjson",valeur="1"))
-         outfile.write((indent+1)*'\t'+ocxml("templateparamslang",valeur="None"))
-         outfile.write((indent+1)*'\t'+ocxml("templateparamsevalpertry",valeur="0"))
-         outfile.write((indent+1)*'\t'+ocxml("templateparamsevald",valeur="{}"))
-         outfile.write((indent+1)*'\t'+ocxml("twigall",valeur=info["CR_TWIGALL"]))
-         outfile.write((indent+1)*'\t'+ocxml("uiplugin",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("uiparameters",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("attachments",valeur="0"))
-         outfile.write((indent+1)*'\t'+ocxml("attachmentsrequired",valeur="0"))
-         outfile.write((indent+1)*'\t'+ocxml("maxfilesize",valeur="10240"))
-         outfile.write((indent+1)*'\t'+ocxml("filenamesregex",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("filenamesexplain",valeur=""))
-         outfile.write((indent+1)*'\t'+ocxml("displayfeedback",valeur="1"))
-         outfile.write((indent+1)*'\t'+ocxml("giveupallowed",valeur="0"))
-         outfile.write((indent+1)*'\t'+ocxml("prototypeextra",valeur=""))
-         
-    # -----------------------------------------
-    # answers for MULTICHOICE NUMERICAL
-    # -----------------------------------------
-    if info["TYPE"] in ["multichoice","numerical"] :
-        #fraction,text,feedback
+        if info["TYPE"] == "multichoice" : xml_multichoice_globalinfo(info,outfile,indent+1)
+        if info["TYPE"] == "numerical" : xml_numerical_globalinfo(info,outfile,indent+1)
+        # "sections" answer (il n'y a pas de sections balise xml answers ou les answer sont regroupés)
+        # answer : grad,text, fback
         answers=list(zip(info["ANSW_GRAD"],
                          info["ANSW_TEXT"],
                          info["ANSW_FBACK"]))
         for ans in answers:
-            answerxml(ans,outfile,indent=1)
-    # -----------------------------------------
-    # testcases for CODERUNNER  
-    # -----------------------------------------
-    if info["TYPE"] == "coderunner":
-        outfile.write((indent+1)*'\t'+oxml("testcases")+'\n')
-        #testcode,stdin,expected,extra,mark,display,useasexample=data
-        testcases=list(zip(info["CR_CASE_CODE"],
-                           info["CR_CASE_STDIN"],
-                           info["CR_CASE_EXPECTED"],
-                           info["CR_CASE_EXTRA"], 
-                           info["CR_CASE_MARK"],
-                           info["CR_CASE_DISPLAY"],
-                           info["CR_CASE_ASEXAMPLE"]))
-        for testcase in testcases:
-            testcasexml(testcase,outfile,indent=1)
-        outfile.write(indent*'\t'+cxml("testcases"))
-    # -----------------------------------------
-    # tags for ALL
-    # -----------------------------------------
-    outfile.write((indent+1)*'\t'+oxml("tags")+'\n')
-    for tag in info["TAGS"].split():
-        outfile.write((indent+2)*'\t'+ocxml("tag",valeur=textxml(tag)))
-    outfile.write((indent+1)*'\t'+cxml("tags"))
+            xml_answer(ans,outfile,indent=indent+1)
+    #CODERUNNER
+    if info["TYPE"] == "coderunner" :
+        xml_coderunner_globalinfo(info,outfile,indent+1)
+        # section testcases avec plusieurs testcase: testcode,stdin,expected,extra,mark,display,useasexample
+        xml_coderunner_testcases(info,outfile,indent+1)
+    #STACK
+    if info["TYPE"] == "stack" :
+        xml_stack_globalinfo(info,outfile,indent+1)
+        xml_stack_input(info,outfile,indent+1)
+        xml_stack_prt(info,outfile,indent+1)
+        xml_stack_qtest(info,outfile,indent+1)
 
-    #END OF QUESTION
-    outfile.write(indent*'\t'+cxml("question"))
 
-#--------------------------------------------------------------------------------------------------
-#lire la categorie à partir du dossier dans un fichier category 
-def readcategory(path):
-    with open(path+'category') as f:
-        data=f.read()
-    return get("CAT",data)
+    # END OF QUESTION (we finish with tags if not category )
+    if info["TYPE"] == "category" : 
+        outfile.write(indent*'\t'+cxml("question"))
+        return 
+    else:
+        outfile.write((indent+1)*'\t'+oxml("tags")+'\n')
+        for tag in info["TAGS"].split():
+            outfile.write((indent+2)*'\t'+ocxml("tag",valeur=textxml(tag)))
+        outfile.write((indent+1)*'\t'+cxml("tags"))
+    
+        #END OF QUESTION
+        outfile.write(indent*'\t'+cxml("question"))
 
 #--------------------------------------------------------------------------------------------------
 # retourne la clé présente dans le fichier qtex si il y a plusieurs possibilités.
@@ -282,10 +382,11 @@ def default_values_before(data):
     info={}
     qtype=get("TYPE",data)
 
-    assert any([grep(cle,data) for cle in exigences[qtype]]),\
-           f"some of the keys are missing for {qtype} : {exigences[qtype]} {[grep(cle,data) for cle in exigences[qtype]]}"
+    if qtype in types_with_requirements:  
+        assert any([grep(cle,data) for cle in same_number[qtype]]),\
+               f"some of the keys are missing for {qtype} : {same_number[qtype]} {[grep(cle,data) for cle in same_number[qtype]]}"
 
-    m=mult(exigences[qtype][[grep(cle,data) for cle in exigences[qtype]].index(True)],data)
+        m=mult(same_number[qtype][[grep(cle,data) for cle in same_number[qtype]].index(True)],data)
 
     match qtype :
         case "multichoice" | "numerical" :
@@ -316,8 +417,6 @@ def check_values_after(info):
         case _ :
             return
 
-
-
 #--------------------------------------------------------------------------------------------------
 # Lecture des fichiers au format maison qtex
 # retourne un dictionnaire des infos lues dans le fichier qtex
@@ -332,7 +431,13 @@ def readqtex(file):
         cle=quellecle(c,data)
         if not grep(cle[1],data) : continue
         info[cle[0]]=get(cle[1],data) 
-    # lectures des entrées dépendantes du type de question
+    if info["TYPE"] == "category" : return info
+    # lectures des entrées globales pour les questions de type différente de category
+    for c in infos["question"]:
+        cle=quellecle(c,data)
+        if not grep(cle[1],data) : continue
+        info[cle[0]]=get(cle[1],data) 
+    # les entrées en fonctions du type info["TYPE"]
     for c in infos[info["TYPE"]] :
         cle=quellecle(c,data)
         for cc in cle[1:]:
@@ -367,15 +472,16 @@ def parsing():
 
 #--------------------------------------------------------------------------------------------------
 if __name__=="__main__":
-    
     path,filespath,outfile=parsing()
-    headertest_xml(outfile=outfile)
-    category_xml(readcategory(path),outfile)
+    xml_headerquiz(outfile=outfile)
+    with open(path+"category","r") as file:
+        info=readqtex(file)
+    xml_question(info,outfile,1)
     for file in filespath :
         print(file.name,file=sys.stderr,end=' ')
         info=readqtex(file)
         print(f"\n\ttype : {info['TYPE']}\n\tname : {info['NAME']}\n\ttags : {info['TAGS']} ",file=sys.stderr)
-        add_question_xml(info,outfile)
+        xml_question(info,outfile,1)
 
-    footertest_xml(outfile=outfile)
+    xml_footerquiz(outfile=outfile)
 
