@@ -374,7 +374,7 @@ if __name__=="__main__":
     for file in filespath :
         print(file.name,file=sys.stderr,end=' ')
         info=readqtex(file)
-        print(f"\n\ttype : {info['TYPE']}\n\tname : {info['NAME']} ",file=sys.stderr)
+        print(f"\n\ttype : {info['TYPE']}\n\tname : {info['NAME']}\n\ttags : {info['TAGS']} ",file=sys.stderr)
         add_question_xml(info,outfile)
 
     footertest_xml(outfile=outfile)
