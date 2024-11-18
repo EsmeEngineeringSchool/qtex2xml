@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-<!-- question: 0  -->
-<question type="category">
-	<category><text>examples qtex2xml</text></category>
-	<info format="html"><text></text></info>
-	<idnumber></idnumber>
-</question>
-<!-- question: gentestmoodle.py  -->
-<question type="coderunner">
-	<name><text>Bash question </text></name>
-	<questiontext format="html">
-		<text><![CDATA[Write bash code to list the names of all files in the current directory that have an extension of .txt. Files are listed 1 per line, in alphabetical order.]]></text>
-	</questiontext>
-	<generalfeedback format="html"><text>Merci d'avoir pris le temps de répondre à cette question.</text></generalfeedback>
-	<defaultgrade>1.0000000</defaultgrade>
-	<penalty>0.3333333</penalty>
-	<hidden>0</hidden>
-	<idnumber></idnumber>
-	<coderunnertype>python3</coderunnertype>
-	<prototypetype>0</prototypetype>
-	<allornothing>1</allornothing>
-	<penaltyregime>10,20, ...</penaltyregime>
-	<precheck>0</precheck>
-	<hidecheck>0</hidecheck>
-	<showsource>0</showsource>
-	<answerboxlines>1</answerboxlines>
-	<answerboxcolumns>100</answerboxcolumns>
-	<answerpreload>
-		<![CDATA[]]>
-	</answerpreload>
-	<globalextra></globalextra>
-	<useace></useace>
-	<resultcolumns></resultcolumns>
-	<template><![CDATA[import subprocess
+	<!-- question: gentestmoodle.py  -->
+	<question type="category">
+		<category><text>examples qtex2xml</text></category>
+		<info format="html"><text></text></info>
+		<idnumber></idnumber>
+	</question>
+	<!-- question: gentestmoodle.py  -->
+	<question type="coderunner">
+		<name><text>Bash question </text></name>
+		<questiontext format="html">
+			<text><![CDATA[Write bash code to list the names of all files in the current directory that have an extension of .txt. Files are listed 1 per line, in alphabetical order.]]></text>
+		</questiontext>
+		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
+		<defaultgrade>1.0000000</defaultgrade>
+		<penalty>0.3333333</penalty>
+		<hidden>0</hidden>
+		<idnumber></idnumber>
+		<coderunnertype>python3</coderunnertype>
+		<prototypetype>0</prototypetype>
+		<allornothing>1</allornothing>
+		<penaltyregime>0,5,10,...</penaltyregime>
+		<precheck>0</precheck>
+		<hidecheck>0</hidecheck>
+		<showsource>0</showsource>
+		<answerboxlines>1</answerboxlines>
+		<answerboxcolumns>100</answerboxcolumns>
+		<answerpreload>
+			<![CDATA[]]>
+		</answerpreload>
+		<globalextra></globalextra>
+		<useace></useace>
+		<resultcolumns></resultcolumns>
+		<template><![CDATA[import subprocess
 
 script = """{{ TEST.testcode | e('py') }}""" + '\n' + """{{ STUDENT_ANSWER | e('py') }}"""
 input = """{{ TEST.stdin | e('py') }}"""
@@ -41,281 +41,394 @@ with open('__prog__.sh', 'w') as outfile:
     outfile.write(script)
 
 subprocess.run(['/bin/bash', '__prog__.sh'], text=True, input=input)]]></template>
-	<iscombinatortemplate></iscombinatortemplate>
-	<allowmultiplestdins></allowmultiplestdins>
-	<answer>
-		<![CDATA[{"answer_code":["ls *.txt"],"test_code":[""],"show_hide":[""],"prefix_ans":["1"]}]]>
-	</answer>
-	<validateonsave>1</validateonsave>
-	<testsplitterre></testsplitterre>
-	<language></language>
-	<acelang></acelang>
-	<sandbox></sandbox>
-	<grader></grader>
-	<cputimelimitsecs></cputimelimitsecs>
-	<memlimitmb></memlimitmb>
-	<sandboxparams></sandboxparams>
-	<templateparams></templateparams>
-	<hoisttemplateparams>1</hoisttemplateparams>
-	<extractcodefromjson>1</extractcodefromjson>
-	<templateparamslang>None</templateparamslang>
-	<templateparamsevalpertry>0</templateparamsevalpertry>
-	<templateparamsevald>{}</templateparamsevald>
-	<twigall>0</twigall>
-	<uiplugin></uiplugin>
-	<uiparameters></uiparameters>
-	<attachments>0</attachments>
-	<attachmentsrequired>0</attachmentsrequired>
-	<maxfilesize>10240</maxfilesize>
-	<filenamesregex></filenamesregex>
-	<filenamesexplain></filenamesexplain>
-	<displayfeedback>1</displayfeedback>
-	<giveupallowed>0</giveupallowed>
-	<prototypeextra></prototypeextra>
-	<testcases>
-	<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
-		<testcode>
-			<text><![CDATA[touch thing.txt
+		<iscombinatortemplate></iscombinatortemplate>
+		<allowmultiplestdins></allowmultiplestdins>
+		<answer>
+			<![CDATA[{"answer_code":["ls *.txt"],"test_code":[""],"show_hide":[""],"prefix_ans":["1"]}]]>
+		</answer>
+		<validateonsave>1</validateonsave>
+		<testsplitterre></testsplitterre>
+		<language></language>
+		<acelang></acelang>
+		<sandbox></sandbox>
+		<grader></grader>
+		<cputimelimitsecs></cputimelimitsecs>
+		<memlimitmb></memlimitmb>
+		<sandboxparams></sandboxparams>
+		<templateparams></templateparams>
+		<hoisttemplateparams>1</hoisttemplateparams>
+		<extractcodefromjson>1</extractcodefromjson>
+		<templateparamslang>None</templateparamslang>
+		<templateparamsevalpertry>0</templateparamsevalpertry>
+		<templateparamsevald>{}</templateparamsevald>
+		<twigall>0</twigall>
+		<uiplugin></uiplugin>
+		<uiparameters></uiparameters>
+		<attachments>0</attachments>
+		<attachmentsrequired>0</attachmentsrequired>
+		<maxfilesize>10240</maxfilesize>
+		<filenamesregex></filenamesregex>
+		<filenamesexplain></filenamesexplain>
+		<displayfeedback>1</displayfeedback>
+		<giveupallowed>0</giveupallowed>
+		<prototypeextra></prototypeextra>
+		<testcases>
+		<testcase testtype="0" useasexample="1" hiderestiffail="0" mark="1.0">
+			<testcode>
+				<text><![CDATA[touch thing.txt
 touch wrong.ext
 touch another.txt]]></text>
-		</testcode>
-		<stdin>
-			<text></text>
-		</stdin>
-		<expected>
-			<text><![CDATA[another.txt
+			</testcode>
+			<stdin>
+				<text></text>
+			</stdin>
+			<expected>
+				<text><![CDATA[another.txt
 thing.txt]]></text>
-		</expected>
-		<extra>
-			<text></text>
-		</extra>
-		<display>
-			<text>SHOW</text>
-		</display>
-	</testcase>
-	<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
-		<testcode>
-			<text><![CDATA[touch dumbo2.txt
+			</expected>
+			<extra>
+				<text></text>
+			</extra>
+			<display>
+				<text>SHOW</text>
+			</display>
+		</testcase>
+		<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
+			<testcode>
+				<text><![CDATA[touch dumbo2.txt
 touch dumbo1.txt]]></text>
-		</testcode>
-		<stdin>
-			<text></text>
-		</stdin>
-		<expected>
-			<text><![CDATA[dumbo1.txt
+			</testcode>
+			<stdin>
+				<text></text>
+			</stdin>
+			<expected>
+				<text><![CDATA[dumbo1.txt
 dumbo2.txt]]></text>
-		</expected>
-		<extra>
-			<text></text>
-		</extra>
-		<display>
-			<text>SHOW</text>
-		</display>
-	</testcase>
-</testcases>
-	<tags>
-		<tag><text>example</text></tag>
-		<tag><text>bash</text></tag>
-		<tag><text>template</text></tag>
-	</tags>
-</question>
-<!-- question: gentestmoodle.py  -->
-<question type="multichoice">
-	<name><text>Librairies utilisées en cours</text></name>
-	<questiontext format="html">
-		<text><![CDATA[Parmi les librairies python suivantes, lesquelles ont-elles déjà été utilisées en cours ?]]></text>
-	</questiontext>
-	<generalfeedback format="html"><text>Merci d'avoir pris le temps de répondre à cette question.</text></generalfeedback>
-	<defaultgrade>1.0000000</defaultgrade>
-	<penalty>0.3333333</penalty>
-	<hidden>0</hidden>
-	<idnumber></idnumber>
-	<single>false</single>
-	<shuffleanswers>true</shuffleanswers>
-	<answernumbering>123</answernumbering>
-	<showstandardinstruction>0</showstandardinstruction>
-	<correctfeedback format="html">
-		<text>Bravo! Votre réponse est correcte.</text>
-	</correctfeedback>
-	<partiallycorrectfeedback format="html">
-		<text>Votre réponse est partiellement correcte.</text>
-	</partiallycorrectfeedback>
-	<incorrectfeedback format="html">
-		<text>Votre réponse est incorrecte.</text>
-	</incorrectfeedback>
-	<shownumcorrect/>
-	<answer fraction="33.33333 " format="html">
-		<text>SciPy</text>
-		<feedback format="html">
-			<text></text>
-		</feedback>
-		<tolerance>0.0</tolerance>
-	</answer>
-	<answer fraction="33.33333 " format="html">
-		<text>NumPy </text>
-		<feedback format="html">
-			<text></text>
-		</feedback>
-		<tolerance>0.0</tolerance>
-	</answer>
-	<answer fraction="33.33333 " format="html">
-		<text>Matplotlib</text>
-		<feedback format="html">
-			<text></text>
-		</feedback>
-		<tolerance>0.0</tolerance>
-	</answer>
-	<answer fraction="0.0 " format="html">
-		<text>Theano</text>
-		<feedback format="html">
-			<text></text>
-		</feedback>
-		<tolerance>0.0</tolerance>
-	</answer>
-	<tags>
-		<tag><text>*</text></tag>
-		<tag><text>python</text></tag>
-		<tag><text>librairies</text></tag>
-		<tag><text>AAV4</text></tag>
-	</tags>
-</question>
-<!-- question: gentestmoodle.py  -->
-<question type="numerical">
-	<name><text>Addition - Base 2</text></name>
-	<questiontext format="html">
-		<text><![CDATA[Donner le résultat de $$\overline{101101}_{2}+\overline{10101}_{2}$$. 
+			</expected>
+			<extra>
+				<text></text>
+			</extra>
+			<display>
+				<text>SHOW</text>
+			</display>
+		</testcase>
+		</testcases>
+		<tags>
+			<tag><text>example</text></tag>
+			<tag><text>bash</text></tag>
+			<tag><text>template</text></tag>
+		</tags>
+	</question>
+	<!-- question: gentestmoodle.py  -->
+	<question type="multichoice">
+		<name><text>Librairies utilisées en cours</text></name>
+		<questiontext format="html">
+			<text><![CDATA[Parmi les librairies python suivantes, lesquelles ont-elles déjà été utilisées en cours ?]]></text>
+		</questiontext>
+		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
+		<defaultgrade>1.0000000</defaultgrade>
+		<penalty>0.3333333</penalty>
+		<hidden>0</hidden>
+		<idnumber></idnumber>
+		<single>false</single>
+		<shuffleanswers>true</shuffleanswers>
+		<answernumbering>123</answernumbering>
+		<showstandardinstruction>0</showstandardinstruction>
+		<correctfeedback format="html">
+			<text>Bravo! Votre réponse est correcte.</text>
+		</correctfeedback>
+		<partiallycorrectfeedback format="html">
+			<text>Votre réponse est partiellement correcte.</text>
+		</partiallycorrectfeedback>
+		<incorrectfeedback format="html">
+			<text>Votre réponse est incorrecte.</text>
+		</incorrectfeedback>
+		<shownumcorrect/>
+		<answer fraction="33.33333 " format="html">
+			<text>SciPy</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<answer fraction="33.33333 " format="html">
+			<text>NumPy</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<answer fraction="33.33333 " format="html">
+			<text>Matplotlib</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<answer fraction="0.0 " format="html">
+			<text>Theano</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<tags>
+			<tag><text>*</text></tag>
+			<tag><text>python</text></tag>
+			<tag><text>librairies</text></tag>
+			<tag><text>AAV4</text></tag>
+		</tags>
+	</question>
+	<!-- question: gentestmoodle.py  -->
+	<question type="numerical">
+		<name><text>Addition - Base 2</text></name>
+		<questiontext format="html">
+			<text><![CDATA[Donner le résultat de $$\overline{101101}_{2}+\overline{10101}_{2}$$. 
 Vous n'écrirez que les chiffres en commençant par le premier $$1$$. 
 Par exemple, si votre réponse est $$\overline{0110011}_{2}$$, vous écrirez simplement $$110011$$.]]></text>
-	</questiontext>
-	<generalfeedback format="html"><text>Merci d'avoir pris le temps de répondre à cette question.</text></generalfeedback>
-	<defaultgrade>1.0000000</defaultgrade>
-	<penalty>0.3333333</penalty>
-	<hidden>0</hidden>
-	<idnumber></idnumber>
-	<unitgradingtype>0</unitgradingtype>
-	<unitpenalty>0</unitpenalty>
-	<showunits>3</showunits>
-	<unitsleft>0</unitsleft>
-	<answer fraction="100" format="html">
-		<text>1000010</text>
-		<feedback format="html">
-			<text></text>
-		</feedback>
-		<tolerance>0.0</tolerance>
-	</answer>
-	<tags>
-		<tag><text>binaire</text></tag>
-		<tag><text>addition</text></tag>
-		<tag><text>**</text></tag>
-		<tag><text>systeme</text></tag>
-		<tag><text>AAV1</text></tag>
-		<tag><text>numeration</text></tag>
-	</tags>
-</question>
-<!-- question: gentestmoodle.py  -->
-<question type="coderunner">
-	<name><text>Un zéro avec scipy </text></name>
-	<questiontext format="html">
-		<text><![CDATA[Dans une variable nommée \(z\), stocker un zéro de la fonction \(f\) ci-dessous, à l'aide de la librairie scipy.]]></text>
-	</questiontext>
-	<generalfeedback format="html"><text>Merci d'avoir pris le temps de répondre à cette question.</text></generalfeedback>
-	<defaultgrade>1.0000000</defaultgrade>
-	<penalty>0.3333333</penalty>
-	<hidden>0</hidden>
-	<idnumber></idnumber>
-	<coderunnertype>python3</coderunnertype>
-	<prototypetype>0</prototypetype>
-	<allornothing>1</allornothing>
-	<penaltyregime>10,20, ...</penaltyregime>
-	<precheck>0</precheck>
-	<hidecheck>0</hidecheck>
-	<showsource>0</showsource>
-	<answerboxlines>4</answerboxlines>
-	<answerboxcolumns>100</answerboxcolumns>
-	<answerpreload>
-		<![CDATA[def f(x):
+		</questiontext>
+		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
+		<defaultgrade>1.0000000</defaultgrade>
+		<penalty>0.3333333</penalty>
+		<hidden>0</hidden>
+		<idnumber></idnumber>
+		<unitgradingtype>0</unitgradingtype>
+		<unitpenalty>0</unitpenalty>
+		<showunits>3</showunits>
+		<unitsleft>0</unitsleft>
+		<answer fraction="100" format="html">
+			<text>1000010</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<tags>
+			<tag><text>binaire</text></tag>
+			<tag><text>addition</text></tag>
+			<tag><text>**</text></tag>
+			<tag><text>systeme</text></tag>
+			<tag><text>AAV1</text></tag>
+			<tag><text>numeration</text></tag>
+		</tags>
+	</question>
+	<!-- question: gentestmoodle.py  -->
+	<question type="coderunner">
+		<name><text>Un zéro avec scipy </text></name>
+		<questiontext format="html">
+			<text><![CDATA[Dans une variable nommée \(z\), stocker un zéro de la fonction \(f\) ci-dessous, à l'aide de la librairie scipy.]]></text>
+		</questiontext>
+		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
+		<defaultgrade>1.0000000</defaultgrade>
+		<penalty>0.3333333</penalty>
+		<hidden>0</hidden>
+		<idnumber></idnumber>
+		<coderunnertype>python3</coderunnertype>
+		<prototypetype>0</prototypetype>
+		<allornothing>1</allornothing>
+		<penaltyregime>0,5,10,...</penaltyregime>
+		<precheck>0</precheck>
+		<hidecheck>0</hidecheck>
+		<showsource>0</showsource>
+		<answerboxlines>4</answerboxlines>
+		<answerboxcolumns>100</answerboxcolumns>
+		<answerpreload>
+			<![CDATA[def f(x):
     return x*x - 2]]>
-	</answerpreload>
-	<globalextra></globalextra>
-	<useace></useace>
-	<resultcolumns></resultcolumns>
-	<template><![CDATA[]]></template>
-	<iscombinatortemplate></iscombinatortemplate>
-	<allowmultiplestdins></allowmultiplestdins>
-	<answer>
-		<![CDATA[from scipy.optimize import root  
+		</answerpreload>
+		<globalextra></globalextra>
+		<useace></useace>
+		<resultcolumns></resultcolumns>
+		<template><![CDATA[]]></template>
+		<iscombinatortemplate></iscombinatortemplate>
+		<allowmultiplestdins></allowmultiplestdins>
+		<answer>
+			<![CDATA[from scipy.optimize import root  
 def f(x): 
     return x*x - 2 
 z = root(f,2)['x'][0]]]>
-	</answer>
-	<validateonsave>1</validateonsave>
-	<testsplitterre></testsplitterre>
-	<language></language>
-	<acelang></acelang>
-	<sandbox></sandbox>
-	<grader></grader>
-	<cputimelimitsecs></cputimelimitsecs>
-	<memlimitmb></memlimitmb>
-	<sandboxparams></sandboxparams>
-	<templateparams></templateparams>
-	<hoisttemplateparams>1</hoisttemplateparams>
-	<extractcodefromjson>1</extractcodefromjson>
-	<templateparamslang>None</templateparamslang>
-	<templateparamsevalpertry>0</templateparamsevalpertry>
-	<templateparamsevald>{}</templateparamsevald>
-	<twigall>0</twigall>
-	<uiplugin></uiplugin>
-	<uiparameters></uiparameters>
-	<attachments>0</attachments>
-	<attachmentsrequired>0</attachmentsrequired>
-	<maxfilesize>10240</maxfilesize>
-	<filenamesregex></filenamesregex>
-	<filenamesexplain></filenamesexplain>
-	<displayfeedback>1</displayfeedback>
-	<giveupallowed>0</giveupallowed>
-	<prototypeextra></prototypeextra>
-	<testcases>
-	<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
-		<testcode>
-			<text><![CDATA[print("z" in dir())]]></text>
-		</testcode>
-		<stdin>
+		</answer>
+		<validateonsave>1</validateonsave>
+		<testsplitterre></testsplitterre>
+		<language></language>
+		<acelang></acelang>
+		<sandbox></sandbox>
+		<grader></grader>
+		<cputimelimitsecs></cputimelimitsecs>
+		<memlimitmb></memlimitmb>
+		<sandboxparams></sandboxparams>
+		<templateparams></templateparams>
+		<hoisttemplateparams>1</hoisttemplateparams>
+		<extractcodefromjson>1</extractcodefromjson>
+		<templateparamslang>None</templateparamslang>
+		<templateparamsevalpertry>0</templateparamsevalpertry>
+		<templateparamsevald>{}</templateparamsevald>
+		<twigall>0</twigall>
+		<uiplugin></uiplugin>
+		<uiparameters></uiparameters>
+		<attachments>0</attachments>
+		<attachmentsrequired>0</attachmentsrequired>
+		<maxfilesize>10240</maxfilesize>
+		<filenamesregex></filenamesregex>
+		<filenamesexplain></filenamesexplain>
+		<displayfeedback>1</displayfeedback>
+		<giveupallowed>0</giveupallowed>
+		<prototypeextra></prototypeextra>
+		<testcases>
+		<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
+			<testcode>
+				<text><![CDATA[print("z" in dir())]]></text>
+			</testcode>
+			<stdin>
+				<text></text>
+			</stdin>
+			<expected>
+				<text><![CDATA[True]]></text>
+			</expected>
+			<extra>
+				<text></text>
+			</extra>
+			<display>
+				<text>SHOW</text>
+			</display>
+		</testcase>
+		<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
+			<testcode>
+				<text><![CDATA[print(1.41421 <= z <= 1.41422)]]></text>
+			</testcode>
+			<stdin>
+				<text></text>
+			</stdin>
+			<expected>
+				<text><![CDATA[True]]></text>
+			</expected>
+			<extra>
+				<text></text>
+			</extra>
+			<display>
+				<text>SHOW</text>
+			</display>
+		</testcase>
+		</testcases>
+		<tags>
+			<tag><text>*</text></tag>
+			<tag><text>zero</text></tag>
+			<tag><text>python</text></tag>
+			<tag><text>scipy</text></tag>
+			<tag><text>AAV4</text></tag>
+		</tags>
+	</question>
+	<!-- question: gentestmoodle.py  -->
+	<question type="stack">
+		<name><text>Trouver la fonction qui régie une équation différentielle</text></name>
+		<questiontext format="html">
+			<text><![CDATA[<p><em>Ceci est une question expérimentale.</em><br></p>
+<p>On considère l'équation différentielle \(y'(t)+2y(t)^{2}=\sin(t)\).
+Déterminer la fonction \(F\) telle que \(y'(t)=F(t,y)\):</p><p>\(F(t,y)=\)
+[[input:ans1]] [[validation:ans1]]<br></p>]]></text>
+		</questiontext>
+		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
+		<defaultgrade>1.0000000</defaultgrade>
+		<penalty>0.3333333</penalty>
+		<hidden>0</hidden>
+		<idnumber></idnumber>
+		<stackversion>
+			<text>2023060500</text>
+		</stackversion>
+		<questionvariables>
+			<text>sol: -2*y*y+sin(t)</text>
+		</questionvariables>
+		<specificfeedback format="html">
+			<text>[[feedback:prt1]]</text>
+		</specificfeedback>
+		<questionnote format="html">
 			<text></text>
-		</stdin>
-		<expected>
-			<text><![CDATA[True]]></text>
-		</expected>
-		<extra>
+		</questionnote>
+		<questiondescription format="html">
 			<text></text>
-		</extra>
-		<display>
-			<text>SHOW</text>
-		</display>
-	</testcase>
-	<testcase testtype="0" useasexample="0" hiderestiffail="0" mark="1.0">
-		<testcode>
-			<text><![CDATA[print(1.41421 <= z <= 1.41422)]]></text>
-		</testcode>
-		<stdin>
-			<text></text>
-		</stdin>
-		<expected>
-			<text><![CDATA[True]]></text>
-		</expected>
-		<extra>
-			<text></text>
-		</extra>
-		<display>
-			<text>SHOW</text>
-		</display>
-	</testcase>
-</testcases>
-	<tags>
-		<tag><text>*</text></tag>
-		<tag><text>zero</text></tag>
-		<tag><text>python</text></tag>
-		<tag><text>scipy</text></tag>
-		<tag><text>AAV4</text></tag>
-	</tags>
-</question>
+		</questiondescription>
+		<questionsimplify>1</questionsimplify>
+		<assumepositive>0</assumepositive>
+		<assumereal>0</assumereal>
+		<decimals>.</decimals>
+		<scientificnotation>*10</scientificnotation>
+		<multiplicationsign>cross</multiplicationsign>
+		<sqrtsign>1</sqrtsign>
+		<complexno>i</complexno>
+		<inversetrig>arccos</inversetrig>
+		<logicsymbol>lang</logicsymbol>
+		<matrixparens>[</matrixparens>
+		<variantsselectionseed></variantsselectionseed>
+		<input>
+			<name>ans1</name>
+			<type>algebraic</type>
+			<tans>sol</tans>
+			<boxsize>15</boxsize>
+			<strictsyntax>1</strictsyntax>
+			<insertstars>0</insertstars>
+			<syntaxhint></syntaxhint>
+			<syntaxattribute></syntaxattribute>
+			<forbidwords></forbidwords>
+			<allowwords></allowwords>
+			<forbidfloat>1</forbidfloat>
+			<requirelowestterms>0</requirelowestterms>
+			<checkanswertype>0</checkanswertype>
+			<mustverify>1</mustverify>
+			<showvalidation>1</showvalidation>
+			<options></options>
+		</input>
+		<prt>
+			<name>prt1</name>
+			<value>1.0000000</value>
+			<autosimplify>1</autosimplify>
+			<feedbackstyle>1</feedbackstyle>
+			<feedbackvariables>
+				<text></text>
+			</feedbackvariables>
+			<node>
+				<name>0</name>
+				<description></description>
+				<answertest>AlgEquiv</answertest>
+				<sans>ans1</sans>
+				<tans>sol</tans>
+				<testoptions></testoptions>
+				<quiet>0</quiet>
+				<truescoremode>=</truescoremode>
+				<truescore>1</truescore>
+				<truepenalty></truepenalty>
+				<truenextnode>-1</truenextnode>
+				<trueanswernote>prt1-1-T</trueanswernote>
+				<truefeedback format="html">
+					<text></text>
+				</truefeedback>
+				<falsescoremode>=</falsescoremode>
+				<falsescore>0</falsescore>
+				<falsepenalty></falsepenalty>
+				<falsenextnode>-1</falsenextnode>
+				<falseanswernote>prt1-1-T</falseanswernote>
+				<falsefeedback format="html">
+					<text></text>
+				</falsefeedback>
+			</node>
+		</prt>
+		<qtest>
+			<testcase>1</testcase>
+			<description>Test case assuming the teacher's input gets full marks.</description>
+			<testinput>
+				<name>ans1</name>
+				<value>sol</value>
+			</testinput>
+			<expected>
+				<name>prt1</name>
+				<expectedscore>1.000000</expectedscore>
+				<expectedpenalty>1.000000</expectedpenalty>
+				<expectedanswernote>prt1-1-T</expectedanswernote>
+			</expected>
+		</qtest>
+		<tags>
+			<tag><text>stack</text></tag>
+			<tag><text>example</text></tag>
+			<tag><text>template</text></tag>
+		</tags>
+	</question>
 </quiz>
