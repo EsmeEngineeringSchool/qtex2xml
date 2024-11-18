@@ -12,7 +12,7 @@ from string_ import get,mult,grep
 CR_CASE_DISPLAY=["SHOW", "HIDE", "HIDE_IF_SUCCEED","HIDE_IF_FAIL"]
 
 # entrees par type 
-globalinfo      = ['TYPE','NAME',('Q','QLONG'),'GFBACK','TAGS']
+globalinfo      = ['TYPE','NAME',('Q','QLONG'),('GFBACK','GFBACKLONG'),'TAGS']
 multichoiceinfo = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
 numericalinfo   = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
 coderunnerinfo  = ['CR_ACELANG','CR_TWIGALL','CR_PENALTYREGIME',
