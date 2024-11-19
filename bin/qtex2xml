@@ -348,17 +348,14 @@ def xml_question(info,outfile,indent=0):
 
 
     # END OF QUESTION (we finish with tags if not category )
-    if info["TYPE"] == "category" : 
-        outfile.write(indent*'\t'+cxml("question"))
-        return 
-    else:
+    if info["TYPE"] != "category" : 
         outfile.write((indent+1)*'\t'+oxml("tags")+'\n')
         for tag in info["TAGS"].split():
             outfile.write((indent+2)*'\t'+ocxml("tag",valeur=textxml(tag)))
         outfile.write((indent+1)*'\t'+cxml("tags"))
     
-        #END OF QUESTION
-        outfile.write(indent*'\t'+cxml("question"))
+    #END OF QUESTION
+    outfile.write(indent*'\t'+cxml("question"))
 
 #--------------------------------------------------------------------------------------------------
 # retourne la clé présente dans le fichier qtex si il y a plusieurs possibilités.
