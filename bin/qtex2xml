@@ -8,13 +8,15 @@ sys.path.append(os.path.abspath("/home/dev/qtex2xml/bin"))
 from format_qtex import entrees 
 # quelques fonctions de manipulations de chaines partagées avec l'autre script
 from string_ import get,mult,grep,tab
+# fonctions de conversion de png to base64
+from conversion import png_to_base64
 
 CR_CASE_DISPLAY=["SHOW", "HIDE", "HIDE_IF_SUCCEED","HIDE_IF_FAIL"]
 
 # entrees par type 
 globalinfo      = ['TYPE','NAME']
-questioninfo    = [('Q','QLONG'),('GFBACK','GFBACKLONG'),'TAGS']
-multichoiceinfo = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
+questioninfo    = [('Q','Q_LONG'),('GFBACK','GFBACK_LONG'),'TAGS']
+multichoiceinfo = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD',('ANSW_TEXT','ANSW_TEXT_LONG'),"ANSW_IMG"]
 numericalinfo   = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
 coderunnerinfo  = ['CR_ACELANG','CR_TWIGALL','CR_PENALTYREGIME',
                    'CR_ISCOMBINATORTEMPLATE','CR_TEMPLATE', 'CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
@@ -25,7 +27,7 @@ infos={"global" : globalinfo , "question" : questioninfo, "multichoice" : multic
 
 # entrées multiples exigées de même taille et au moins une doit être présente
 types_with_requirements = ["multichoice","numerical","coderunner"]
-same_number={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
+same_number={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT',"ANSW_IMG"],
              "numerical"   :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
              "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED',
                               'CR_CASE_DISPLAY','CR_CASE_STDIN','CR_CASE_EXTRA']}
@@ -87,10 +89,23 @@ def octextcdataxml(nombalise,*args,cdata="",indent=0):
 
 #--------------------------------------------------------------------------------------------------
 # answer in xml (multichoice,numerical)
-def xml_answer(data,outfile,indent=0):
-    fraction,text,feedback=data
+def xml_answer(info,data,outfile,indent=0):
+    fraction,text,feedback,img=data
     outfile.write(tab(indent)+oxml("answer",("fraction",fraction),("format","html"))+'\n')
-    outfile.write(tab(indent+1)+textxml(text)+'\n')
+    if img != "":
+        print(img.split(" "))
+        filepath_img,w_img,h_img = img.split(" ")
+        filepath_img = info["PATH"]+filepath_img
+        path_img,filename=os.path.dirname(filepath_img),os.path.basename(filepath_img)
+        outfile.write(tab(indent+1)+textxml(oxml("img",("src","@@PLUGINFILE@@/"+filepath_img),\
+                                                       ("alt","qtex2xml"),\
+                                                       ("width",w_img),\
+                                                       ("height",h_img),\
+                                                       ("class","img-fluid atto_image_button_text-bottom")))+'\n')
+        outfile.write(oxml("file",("name",filename),("path",path_img),("encoding","base64"))+png_to_base64(filepath_img))
+        outfile.write(cxml("file"))
+    else:
+        outfile.write(tab(indent+1)+textxml(text)+'\n')
     outfile.write(tab(indent+1)+octextxml("feedback",("format","html"),text=feedback,indent=indent+1))
     outfile.write(tab(indent+1)+ocxml("tolerance",valeur="0.0"))
     outfile.write(tab(indent)+cxml("answer"))
@@ -328,12 +343,13 @@ def xml_question(info,outfile,indent=0):
         if info["TYPE"] == "multichoice" : xml_multichoice_globalinfo(info,outfile,indent+1)
         if info["TYPE"] == "numerical" : xml_numerical_globalinfo(info,outfile,indent+1)
         # "sections" answer (il n'y a pas de sections balise xml answers ou les answer sont regroupés)
-        # answer : grad,text, fback
-        answers=list(zip(info["ANSW_GRAD"],
-                         info["ANSW_TEXT"],
-                         info["ANSW_FBACK"]))
+        # answer : grad, text, fback, img 
+        answers=list(zip(info["ANSW_GRAD" ],
+                         info["ANSW_TEXT" ],
+                         info["ANSW_FBACK"],
+                         info["ANSW_IMG"]))
         for ans in answers:
-            xml_answer(ans,outfile,indent=indent+1)
+            xml_answer(info,ans,outfile,indent=indent+1)
     #CODERUNNER
     if info["TYPE"] == "coderunner" :
         xml_coderunner_globalinfo(info,outfile,indent+1)
@@ -362,8 +378,8 @@ def xml_question(info,outfile,indent=0):
 # La fonction retourne un tuple: le premier élément est la clé (dictionnaire) d'accès info 
 # et la forme de la clé qui réellement présente dans le fichier.
 # Le tuple peut donc présenter deux fois la même valeur
-# Note : c'est pour traiter les cas de #Q et #QLONG #END QLONG. Ce qui est lu est rangé dans 
-# info["Q"] même si QLONG est la clé présente dans le fichier qtex. 
+# Note : c'est pour traiter les cas de #Q et #Q_LONG #END Q_LONG. Ce qui est lu est rangé dans 
+# info["Q"] même si Q_LONG est la clé présente dans le fichier qtex. 
 def quellecle(cle,data):
     which_index = [k for k,c in enumerate(cle) if grep(c,data)]
     if not isinstance(cle,tuple) :
@@ -390,6 +406,7 @@ def default_values_before(data):
             if not grep('ANSW_FBACK',data) : info['ANSW_FBACK']=[None]*m
             if not grep('ANSW_TEXT',data)  : info['ANSW_TEXT']=[""]*m
             if not grep('ANSW_GRAD',data)  : info['ANSW_GRAD']=["0"]*m
+            if not grep('ANSW_IMG',data)   : info['ANSW_IMG']=[""]*m
         case "coderunner" :
             if not grep("CR_TEMPLATE",data)              : info["CR_TEMPLATE"]=""
             if not grep("CR_ACELANG",data)               : info["CR_ACELANG"]=""
@@ -417,12 +434,13 @@ def check_values_after(info):
 #--------------------------------------------------------------------------------------------------
 # Lecture des fichiers au format maison qtex
 # retourne un dictionnaire des infos lues dans le fichier qtex
-def readqtex(file):
+def readqtex(path,file):
     data=file.read()
     # ------------------------------------------
     # default value
     # ------------------------------------------
     info=default_values_before(data) 
+    info["PATH"]=path
     # lectures des entrées globales
     for c in infos["global"] :
         cle=quellecle(c,data)
@@ -471,12 +489,13 @@ def parsing():
 if __name__=="__main__":
     path,filespath,outfile=parsing()
     xml_headerquiz(outfile=outfile)
-    with open(path+"category","r") as file:
-        info=readqtex(file)
+    with open(path+"category.qtex","r") as file:
+        info=readqtex(path,file)
     xml_question(info,outfile,1)
     for file in filespath :
         print(file.name,file=sys.stderr,end=' ')
-        info=readqtex(file)
+        print(path)
+        info=readqtex(path,file)
         print(f"\n\ttype : {info['TYPE']}\n\tname : {info['NAME']}\n\ttags : {info['TAGS']} ",file=sys.stderr)
         xml_question(info,outfile,1)
 
