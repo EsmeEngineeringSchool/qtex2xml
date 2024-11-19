@@ -7,8 +7,6 @@ usage()
 dir=$(basename $1)
 dirout=$(basename $2)
 [ -z $dirout ] && echo "you should give dir/output" && usage 
-echo "${dir}/category -> ${dirout}/category"
-transqtex -i ${dir}/category -o ${dirout}/category
 for file in ${dir}/*.qtex
 do
     base=$(basename $file)
