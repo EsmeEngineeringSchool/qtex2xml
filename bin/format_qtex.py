@@ -36,5 +36,6 @@ entrees={'TYPE'                    :{'long':False,'translation':False,'multiple'
          'CR_CASE_ASEXAMPLE'       :{'long':False,'translation':False,'multiple':True },
          'CR_CASE_EXPECTED'        :{'long':False,'translation':False,'multiple':True },
          'CR_CASE_EXPECTED_LONG'   :{'long':True ,'translation':False,'multiple':True },
-         'STACK_QVAR'              :{'long':False,'translation':False,'multiple':False}
+         'STACK_QVAR'              :{'long':False,'translation':False,'multiple':False},
+         'STACK_SFBACK'            :{'long':False,'translation':False,'multiple':False}
 } 

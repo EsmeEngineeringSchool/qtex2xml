@@ -22,7 +22,7 @@ coderunnerinfo  = ['CR_ACELANG','CR_TWIGALL','CR_PENALTYREGIME',
                    'CR_ISCOMBINATORTEMPLATE','CR_TEMPLATE', 'CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
                    'CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'), 'CR_CASE_DISPLAY','CR_CASE_STDIN',
                    'CR_CASE_EXTRA','CR_CASE_ASEXAMPLE']
-stackinfo       = ['STACK_QVAR']
+stackinfo       = ['STACK_QVAR','STACK_SFBACK']
 infos={"global" : globalinfo , "question" : questioninfo, "multichoice" : multichoiceinfo, "numerical": numericalinfo, "coderunner" : coderunnerinfo , "stack" : stackinfo}
 
 # entrées multiples exigées de même taille et au moins une doit être présente
@@ -237,7 +237,7 @@ def xml_coderunner_testcases(info,outfile,indent):
 def xml_stack_globalinfo(info,outfile,indent):
     outfile.write(tab(indent)+octextxml("stackversion",text="2023060500",indent=indent))
     outfile.write(tab(indent)+octextxml("questionvariables",text=info["STACK_QVAR"],indent=indent))
-    outfile.write(tab(indent)+octextxml("specificfeedback",("format","html"),text="[[feedback:prt1]]",indent=indent))
+    outfile.write(tab(indent)+octextxml("specificfeedback",("format","html"),text=info["STACK_SFBACK"],indent=indent))
     outfile.write(tab(indent)+octextxml("questionnote",("format","html"),text="",indent=indent))
     outfile.write(tab(indent)+octextxml("questiondescription",("format","html"),text="",indent=indent))
     outfile.write(tab(indent)+ocxml("questionsimplify",valeur="1"))

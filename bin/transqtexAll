@@ -10,7 +10,12 @@ dirout=$(basename $2)
 for file in ${dir}/*.qtex
 do
     base=$(basename $file)
-    file_en=${base::-5}_en.qtex
+    if [ ${base} == "category.qtex" ]
+    then
+        file_en=category.qtex
+    else
+        file_en=${base::-5}_en.qtex
+    fi
     echo "${dir}/$base -> ${dirout}/$file_en"
     transqtex -i ${dir}/$base -o ${dirout}/$file_en
 done
