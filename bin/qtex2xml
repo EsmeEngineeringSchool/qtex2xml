@@ -93,16 +93,15 @@ def xml_answer(info,data,outfile,indent=0):
     fraction,text,feedback,img=data
     outfile.write(tab(indent)+oxml("answer",("fraction",fraction),("format","html"))+'\n')
     if img != "":
-        print(img.split(" "))
         filepath_img,w_img,h_img = img.split(" ")
         filepath_img = info["PATH"]+filepath_img
-        path_img,filename=os.path.dirname(filepath_img),os.path.basename(filepath_img)
-        outfile.write(tab(indent+1)+textxml(oxml("img",("src","@@PLUGINFILE@@/"+filepath_img),\
+        filename=os.path.basename(filepath_img)
+        outfile.write(tab(indent+1)+textcdataxml(oxml("img",("src","@@PLUGINFILE@@/"+filename),\
                                                        ("alt","qtex2xml"),\
                                                        ("width",w_img),\
                                                        ("height",h_img),\
                                                        ("class","img-fluid atto_image_button_text-bottom")))+'\n')
-        outfile.write(oxml("file",("name",filename),("path",path_img),("encoding","base64"))+png_to_base64(filepath_img))
+        outfile.write(oxml("file",("name",filename),("path","/"),("encoding","base64"))+png_to_base64(filepath_img))
         outfile.write(cxml("file"))
     else:
         outfile.write(tab(indent+1)+textxml(text)+'\n')
@@ -494,7 +493,6 @@ if __name__=="__main__":
     xml_question(info,outfile,1)
     for file in filespath :
         print(file.name,file=sys.stderr,end=' ')
-        print(path)
         info=readqtex(path,file)
         print(f"\n\ttype : {info['TYPE']}\n\tname : {info['NAME']}\n\ttags : {info['TAGS']} ",file=sys.stderr)
         xml_question(info,outfile,1)
