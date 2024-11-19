@@ -492,6 +492,7 @@ if __name__=="__main__":
         info=readqtex(path,file)
     xml_question(info,outfile,1)
     for file in filespath :
+        if file.name[-13:]=="category.qtex" : continue
         print(file.name,file=sys.stderr,end=' ')
         info=readqtex(path,file)
         print(f"\n\ttype : {info['TYPE']}\n\tname : {info['NAME']}\n\ttags : {info['TAGS']} ",file=sys.stderr)
