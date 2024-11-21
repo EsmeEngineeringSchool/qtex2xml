@@ -1,9 +1,9 @@
 # qtex2xml
-qtex2xml permet de produire des fichiers xml de questions de différents types (Coderunner, multichoice, Numerical, Stack ) de Moodle
+qtex2xml permet de produire des fichiers xml de questions de différents types (Coderunner, multichoice, Numerical, Stack, Wiris) de Moodle
 
 ## Exemple d'utilisation : 
 
-    bin/qtex2xml -i examples/*.qtex -o test.xml
+    bin/qtex2xml -i examples/*.qtex -o all_examples.xml
 
 si l'option -o n'est pas donnée écrit dans la sortie standard (DEBUG seulement)
 
@@ -35,12 +35,12 @@ Pour l'instant quelques types de questions Moodle sont pris en charge par les sc
 3. stack      (en phase de test)
 
 Voici les templates de ces types de question : 
-## "category"
+### "category"
 ```
 TYPE category
 NAME [Nom de la catégorie]
 ```
-## "multichoice"
+### "multichoice"
 ```
 #TYPE multichoice
 #NAME [Nom de la question]
@@ -60,7 +60,7 @@ NAME [Nom de la catégorie]
 #ANSW_TEXT [Texte de la réponse n]
 #TAGS [TAGS associés à la question]
 ```
-## "numerical"
+### "numerical"
 ```
 #TYPE numerical
 #NAME [Nom de la question]
@@ -70,7 +70,7 @@ NAME [Nom de la catégorie]
 #ANSW_TEXT [Texte de la réponse]
 #TAGS [TAGS associés à la question]
 ```
-## "coderunner"
+### "coderunner"
 ```
 #TYPE coderunner
 #NAME [Nom de la question]
@@ -101,26 +101,19 @@ print(f(5))
 #CR_CASE_MARK 1.0
 #TAGS [TAGS associés à la question] 
 ```
-## "stack"
+### "stack"
 ```
 #TYPE stack
 #NAME [Nom de la question]
 #GFBACK Merci d'avoir pris le temps de répondre à cette question.
-#QLONG
-#END QLONG
+#Q_LONG
+#END Q_LONG
 #STACK_QVAR 
-#SFBACK 
+#STACK_SFBACK 
 #TAGS
 ```
 
-### Quelques entrees :
-1. GFBACK: general Feedback
-2. CFBACK: Correct Feedback
-3. PFBACK: Partially Correct Feedback
-4. IFBACK: Incorrect Feedback
-5. ANSW_GRAD : Answer Grad
-6. ANSW_TEXT : Answer Text 
-7. ANSW_FBACK : Answer Feedback 
-8. CR_CASE_ASEXAMPLE : use as example  
-...
-
+## Description des toutes les entrées
+[Description des entréee](doc/entrees.md)
+## un peu de couleur
+[La coloration syntaxique avec vim](doc/vim.md)

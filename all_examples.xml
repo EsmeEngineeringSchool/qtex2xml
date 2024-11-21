@@ -2,13 +2,13 @@
 <quiz>
 	<!-- question: gentestmoodle.py  -->
 	<question type="category">
-		<category><text>examples qtex2xml</text></category>
+		<category><text>Tous les exemples de qtex2xml</text></category>
 		<info format="html"><text></text></info>
 		<idnumber></idnumber>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="coderunner">
-		<name><text>qtex2xml_exemple_bash_coderunner</text></name>
+		<name><text>Exemple de question coderunner pour bash</text></name>
 		<questiontext format="html">
 			<text><![CDATA[Write bash code to list the names of all files in the current directory 
 that have an extension of .txt. Files are listed 1 per line, in alphabetical order.]]></text>
@@ -123,7 +123,7 @@ dumbo2.txt]]></text>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="multichoice">
-		<name><text>qtex2xml_exemple_multichoice</text></name>
+		<name><text>Exemple de question multichoice</text></name>
 		<questiontext format="html">
 			<text><![CDATA[Parmi les librairies python suivantes, lesquelles ont-elles déjà été utilisées en cours ?]]></text>
 		</questiontext>
@@ -183,7 +183,7 @@ dumbo2.txt]]></text>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="multichoice">
-		<name><text>qtex2xml_exemple_multichoice_img</text></name>
+		<name><text>Exemple de question multichoice avec des images dans les réponses</text></name>
 		<questiontext format="html">
 			<text><![CDATA[Cocher le champ de vecteurs correspondant à l'équation différentielle \(y'(t)=y(t)\)]]></text>
 		</questiontext>
@@ -248,7 +248,7 @@ dumbo2.txt]]></text>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="multichoice">
-		<name><text>qtex2xml_exemple_Q_IMG</text></name>
+		<name><text>Exemple de question avec un image dans la quesion [Q_IMG]</text></name>
 		<questiontext format="html">
 			<text><![CDATA[On se place dans le contexte du modèle proie-prédateur étudié en TD. 
 Qu'a-t-on fait pour passer de la figure gauche à la figure droite ?
@@ -313,7 +313,7 @@ L'un avec des stries rapprochées (à droite), l'autre avec des écarts plus fai
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="numerical">
-		<name><text>qtex2xml_exemple_numerical</text></name>
+		<name><text>Exemple de question numerical</text></name>
 		<questiontext format="html">
 			<text><![CDATA[Donner le résultat de $$\overline{101101}_{2}+\overline{10101}_{2}$$. 
 Vous n'écrirez que les chiffres en commençant par le premier $$1$$. 
@@ -344,7 +344,7 @@ Par exemple, si votre réponse est $$\overline{0110011}_{2}$$, vous écrirez sim
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="coderunner">
-		<name><text>qtex2xml_exemple_python_coderunner</text></name>
+		<name><text>Exemple de question coderunner (python)</text></name>
 		<questiontext format="html">
 			<text><![CDATA[Dans une variable nommée \(z\), stocker un zéro de la fonction \(f\) ci-dessous, à l'aide de la librairie scipy.]]></text>
 		</questiontext>
@@ -450,7 +450,7 @@ z = root(f,2)['x'][0]]]>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="shortanswerwiris">
-		<name><text>qtex2xml_exemple_shortanswerwiris</text></name>
+		<name><text>Exemple de question shortanswerwiris</text></name>
 		<questiontext format="html">
 			<text><![CDATA[Donner la dérivée de \(f(x)=2x^2+3x\)]]></text>
 		</questiontext>
@@ -476,7 +476,7 @@ z = root(f,2)['x'][0]]]>
 	</question>
 	<!-- question: gentestmoodle.py  -->
 	<question type="stack">
-		<name><text>qtex2xml_exemple_stack</text></name>
+		<name><text>Exemple de question stack</text></name>
 		<questiontext format="html">
 			<text><![CDATA[<p><em>Ceci est une question expérimentale.</em><br></p>
 <p>On considère l'équation différentielle \(y'(t)+2y(t)^{2}=\sin(t)\).
