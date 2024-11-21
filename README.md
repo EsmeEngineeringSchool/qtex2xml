@@ -1,11 +1,7 @@
 # qtex2xml
 qtex2xml permet de produire des fichiers xml de questions de différents types (Coderunner, multichoice, Numerical, Stack, Wiris) de Moodle
 
-<<<<<<< HEAD
 ## Exemple : 
-=======
-## Exemples d'utilisation : 
->>>>>>> 79dc5abdca0a9d7efe7f29a828d4de7cc63334b3
 
     bin/qtex2xml -i examples/*.qtex -o all_examples.xml
 
