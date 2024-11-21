@@ -1,5 +1,5 @@
 #TYPE numerical
-#NAME qtex2xml_exemple_numerical
+#NAME Exemple de question numerical
 #GFBACK Merci d'avoir pris le temps de répondre à cette question.
 #Q_LONG
 Donner le résultat de $$\overline{101101}_{2}+\overline{10101}_{2}$$. 

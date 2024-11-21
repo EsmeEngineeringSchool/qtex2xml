@@ -1,5 +1,5 @@
 #TYPE coderunner
-#NAME qtex2xml_exemple_bash_coderunner 
+#NAME Exemple de question coderunner pour bash 
 #Q_LONG
 Write bash code to list the names of all files in the current directory 
 that have an extension of .txt. Files are listed 1 per line, in alphabetical order.
