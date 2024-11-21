@@ -10,6 +10,7 @@ entrees={'TYPE'                    :{'long':False,'translation':False,'multiple'
          'NAME'                    :{'long':False,'translation':True ,'multiple':False},
          'Q'                       :{'long':False,'translation':True ,'multiple':False},
          'Q_LONG'                  :{'long':True ,'translation':True ,'multiple':False},
+         'Q_IMG'                   :{'long':False,'translation':False,'multiple':False},
          'GFBACK_LONG'             :{'long':True ,'translation':True ,'multiple':False},
          'GFBACK'                  :{'long':False,'translation':True ,'multiple':False},
          'CFBACK'                  :{'long':False,'translation':True ,'multiple':False},
