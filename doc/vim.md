@@ -1,6 +1,6 @@
-#La coloration syntaxique avec vim
+# La coloration syntaxique avec vim
 
-le fichier syntax/qtex.vim
+## `syntax/qtex.vim`
 ```vim
 syntax match qtexKey      "#\w\+" skipwhite nextgroup=qtexEntry, contained
 syntax match qtexKey "#END \w\+" skipwhite nextgroup=qtexKey contained
@@ -13,7 +13,7 @@ syntax region PythonRegion matchgroup=qtexKey start=/#CR_ANSWER/ end=/#END CR_AN
 syntax region PythonRegion matchgroup=qtexKey start=/#CR_CASE_CODE/ end=/#END CR_CASE_CODE/ contains=@Python                          syntax region PythonRegion matchgroup=qtexKey start=/#CR_TEMPLATE/ end=/#END CR_TEMPLATE/ contains=@Python    
 ```
 
-ftdetect/qtex.vim
+## `ftdetect/qtex.vim`
 ```vim
 autocmd BufRead,BufNewFile *.qtex set filetype=qtex
 ```
