@@ -14,10 +14,10 @@ def rmnewlineboth(s):
     return rmnewline(rmnewline(s),end=False)
 
 def rmnewlines(x):
-    return [rmnewline(s) for s in x]
+    return [rmnewline(s).rstrip() for s in x]
 
 def rmnewlinesboth(x):
-    return [rmnewlineboth(s) for s in x]
+    return [rmnewlineboth(s).rstrip() for s in x]
 
 #--------------------------------------------------------------------------------------------------
 #Récupérer la chaine de caractère associé à une clé
@@ -30,14 +30,14 @@ def get(pattern,data):
         if entrees[pattern]["multiple"] :
             return rmnewlinesboth(re.findall(regex,data,re.DOTALL))
         else:  
-            return rmnewlineboth(re.findall(regex,data,re.DOTALL)[0]) 
+            return rmnewlineboth(re.findall(regex,data,re.DOTALL)[0]).rstrip() 
     else:
         #Récupérer la chaine de caractères après le champ #{pattern}
         regex=f"(?<=\#{pattern}\s).*"
         if entrees[pattern]["multiple"]  :
             return rmnewlines(re.findall(regex,data))
         else:
-            return rmnewline(re.findall(regex,data)[0])
+            return rmnewline(re.findall(regex,data)[0]).rstrip()
 
 #--------------------------------------------------------------------------------------------------
 #retourne combien d'occurences sont trouvés

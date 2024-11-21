@@ -1,5 +1,5 @@
 #TYPE multichoice
-#NAME Librairies utilisées en cours
+#NAME qtex2xml_exemple_multichoice
 #GFBACK Merci d'avoir pris le temps de répondre à cette question.
 #CFBACK Bravo! Votre réponse est correcte.
 #PFBACK Votre réponse est partiellement correcte.
@@ -13,4 +13,4 @@
 #ANSW_TEXT NumPy
 #ANSW_TEXT Matplotlib
 #ANSW_TEXT Theano
-#TAGS * python librairies AAV4
+#TAGS qtex2xml exemple multichoice template 
