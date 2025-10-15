@@ -100,6 +100,6 @@ print(f(5))
 ## Outils
 [Quelques scripts utiles pour le traitement des fichiers qtex](doc/utils.md)
 ## Description des toutes les entrées
-[Description des entréee](doc/entrees.md)
+[Description des entrées](doc/entrees.md)
 ## un peu de couleur
 [La coloration syntaxique avec vim](doc/vim.md)
