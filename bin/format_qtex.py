@@ -16,6 +16,8 @@ entrees={'TYPE'                    :{'long':False,'translation':False,'multiple'
          'CFBACK'                  :{'long':False,'translation':True ,'multiple':False},
          'PFBACK'                  :{'long':False,'translation':True ,'multiple':False},
          'IFBACK'                  :{'long':False,'translation':True ,'multiple':False},
+         'SUB_Q'                   :{'long':False,'translation':True ,'multiple':True },
+         'SUB_Q_LONG'              :{'long':True ,'translation':True ,'multiple':True },
          'ANSW_GRAD'               :{'long':False,'translation':False,'multiple':True },
          'ANSW_TEXT'               :{'long':False,'translation':True ,'multiple':True },
          'ANSW_TEXT_LONG'          :{'long':True ,'translation':True ,'multiple':True },
