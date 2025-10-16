@@ -1,51 +1,16 @@
 #!/usr/bin/python3
-
 import sys
 import os
 # les modules suivants partagent des fonctions avec transqtex 
-sys.path.append(os.path.abspath("/home/dev/qtex2xml/bin"))
-# le format (les types d'entrees) est partagé avec l'autre script
-from format_qtex import entrees 
+sys.path.append(os.path.abspath("/home/filipe/dev/qtex2xml/bin"))
+# le format (les types d'entrees) et informations par type (est partagé avec d'autre script)
+from format_qtex import infos,entrees,types_with_requirements,same_number 
 # quelques fonctions de manipulations de chaines partagées avec l'autre script
 from string_ import get,mult,grep,tab
 # fonctions de conversion de png to base64
 from conversion import png_to_base64
 
-CR_CASE_DISPLAY=["SHOW", "HIDE", "HIDE_IF_SUCCEED","HIDE_IF_FAIL"]
-
-# entrees par type 
-globalinfo      = ['TYPE','NAME']
-questioninfo    = [('Q','Q_LONG'),('GFBACK','GFBACK_LONG'),'TAGS',"Q_IMG"]
-multichoiceinfo = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD',('ANSW_TEXT','ANSW_TEXT_LONG'),"ANSW_IMG"]
-numericalinfo   = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
-coderunnerinfo  = ['CR_ACELANG','CR_TWIGALL','CR_PENALTYREGIME',
-                   'CR_ISCOMBINATORTEMPLATE','CR_TEMPLATE', 'CR_PRELOAD','CR_ANSWER','CR_CASE_MARK',
-                   'CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'), 'CR_CASE_DISPLAY','CR_CASE_STDIN',
-                   'CR_CASE_EXTRA','CR_CASE_ASEXAMPLE']
-stackinfo       = ['STACK_QVAR','STACK_SFBACK']
-shortanswerwirisinfo = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
-multichoicewirisinfo = []
-matchinginfo=['CFBACK','PFBACK','IFBACK',('ANSW_TEXT','ANSW_TEXT_LONG'), ('SUB_Q','SUB_Q_LONG')]
-
-
-infos={"global"           : globalinfo ,  \
-       "question"         : questioninfo, \
-       "multichoice"      : multichoiceinfo,\
-       "numerical"        : numericalinfo,\
-       "coderunner"       : coderunnerinfo,\
-       "stack"            : stackinfo, \
-       "multichoicewiris" : multichoicewirisinfo,\
-       "shortanswerwiris" : shortanswerwirisinfo,\
-       "matching"         : matchinginfo
-      }
-
-# entrées multiples exigées de même taille et au moins une doit être présente
-types_with_requirements = ["multichoice","numerical","coderunner","matching"]
-same_number={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT',"ANSW_IMG"],
-             "numerical"   :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
-             "matching"    :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT', "SUB_Q"],
-             "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED',
-                              'CR_CASE_DISPLAY','CR_CASE_STDIN','CR_CASE_EXTRA']}
+# return une chaine vide "" ou "0" en fonction du boléen lue au format qtex 0,1,true,false 
 def qtexbool(v):
     if v in "01":
         return "" if bool(int(v)) else "0"
@@ -510,10 +475,11 @@ def default_values_before(data):
     return info
 
 def check_values_after(info):
+    ALLOWED_CR_CASE_DISPLAY=["SHOW", "HIDE", "HIDE_IF_SUCCEED","HIDE_IF_FAIL"]
     match info["TYPE"] :
         case "coderunner" :
             for v in info["CR_CASE_DISPLAY"]:
-                assert v in CR_CASE_DISPLAY, f"{v} is not in CR_CASE_DISPLAY\nCheck your input"
+                assert v in ALLOWED_CR_CASE_DISPLAY, f"{v} is not in CR_CASE_DISPLAY\nCheck your input"
         case _ :
             return
 
