@@ -122,20 +122,17 @@ dumbo2.txt]]></text>
 		</tags>
 	</question>
 	<!-- question: gentestmoodle.py  -->
-	<question type="multichoice">
-		<name><text>Exemple de question multichoice</text></name>
+	<question type="matching">
+		<name><text>Exemple de question matching</text></name>
 		<questiontext format="html">
-			<text><![CDATA[Parmi les librairies python suivantes, lesquelles ont-elles déjà été utilisées en cours ?]]></text>
+			<text><![CDATA[Associer chaque commande à son rôle.]]></text>
 		</questiontext>
 		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
 		<defaultgrade>1.0000000</defaultgrade>
 		<penalty>0.3333333</penalty>
 		<hidden>0</hidden>
 		<idnumber></idnumber>
-		<single>false</single>
 		<shuffleanswers>true</shuffleanswers>
-		<answernumbering>123</answernumbering>
-		<showstandardinstruction>0</showstandardinstruction>
 		<correctfeedback format="html">
 			<text>Bravo! Votre réponse est correcte.</text>
 		</correctfeedback>
@@ -146,38 +143,34 @@ dumbo2.txt]]></text>
 			<text>Votre réponse est incorrecte.</text>
 		</incorrectfeedback>
 		<shownumcorrect/>
-		<answer fraction="33.33333" format="html">
-			<text>SciPy</text>
-			<feedback format="html">
-				<text></text>
-			</feedback>
-			<tolerance>0.0</tolerance>
-		</answer>
-		<answer fraction="33.33333" format="html">
-			<text>NumPy</text>
-			<feedback format="html">
-				<text></text>
-			</feedback>
-			<tolerance>0.0</tolerance>
-		</answer>
-		<answer fraction="33.33333" format="html">
-			<text>Matplotlib</text>
-			<feedback format="html">
-				<text></text>
-			</feedback>
-			<tolerance>0.0</tolerance>
-		</answer>
-		<answer fraction="0.0" format="html">
-			<text>Theano</text>
-			<feedback format="html">
-				<text></text>
-			</feedback>
-			<tolerance>0.0</tolerance>
-		</answer>
+		<subquestion format="html">
+			<text><![CDATA[<tt>chmod 222 file1</tt>]]></text>
+			<answer>
+				<text>Attribue que le droit d'écriture à tous</text>
+			</answer>
+		</subquestion>
+		<subquestion format="html">
+			<text><![CDATA[<tt>chmod 444 file1</tt>]]></text>
+			<answer>
+				<text>Attribue que le droit de lecture à tous</text>
+			</answer>
+		</subquestion>
+		<subquestion format="html">
+			<text><![CDATA[<tt>chmod 111 file1</tt>]]></text>
+			<answer>
+				<text>Attribue que le droit d'execution à tous</text>
+			</answer>
+		</subquestion>
+		<subquestion format="html">
+			<text><![CDATA[<tt>chmod 000 file1</tt>]]></text>
+			<answer>
+				<text>Attribue aucun droits à tous</text>
+			</answer>
+		</subquestion>
 		<tags>
 			<tag><text>qtex2xml</text></tag>
 			<tag><text>exemple</text></tag>
-			<tag><text>multichoice</text></tag>
+			<tag><text>matching</text></tag>
 			<tag><text>template</text></tag>
 		</tags>
 	</question>
@@ -309,6 +302,66 @@ L'un avec des stries rapprochées (à droite), l'autre avec des écarts plus fai
 			<tag><text>systeme</text></tag>
 			<tag><text>methode_euler</text></tag>
 			<tag><text>equations_differentielles</text></tag>
+		</tags>
+	</question>
+	<!-- question: gentestmoodle.py  -->
+	<question type="multichoice">
+		<name><text>Exemple de question multichoice</text></name>
+		<questiontext format="html">
+			<text><![CDATA[Parmi les librairies python suivantes, lesquelles ont-elles déjà été utilisées en cours ?]]></text>
+		</questiontext>
+		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
+		<defaultgrade>1.0000000</defaultgrade>
+		<penalty>0.3333333</penalty>
+		<hidden>0</hidden>
+		<idnumber></idnumber>
+		<single>false</single>
+		<shuffleanswers>true</shuffleanswers>
+		<answernumbering>123</answernumbering>
+		<showstandardinstruction>0</showstandardinstruction>
+		<correctfeedback format="html">
+			<text>Bravo! Votre réponse est correcte.</text>
+		</correctfeedback>
+		<partiallycorrectfeedback format="html">
+			<text>Votre réponse est partiellement correcte.</text>
+		</partiallycorrectfeedback>
+		<incorrectfeedback format="html">
+			<text>Votre réponse est incorrecte.</text>
+		</incorrectfeedback>
+		<shownumcorrect/>
+		<answer fraction="33.33333" format="html">
+			<text>SciPy</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<answer fraction="33.33333" format="html">
+			<text>NumPy</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<answer fraction="33.33333" format="html">
+			<text>Matplotlib</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<answer fraction="0.0" format="html">
+			<text>Theano</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<tags>
+			<tag><text>qtex2xml</text></tag>
+			<tag><text>exemple</text></tag>
+			<tag><text>multichoice</text></tag>
+			<tag><text>template</text></tag>
 		</tags>
 	</question>
 	<!-- question: gentestmoodle.py  -->
@@ -445,6 +498,45 @@ z = root(f,2)['x'][0]]]>
 			<tag><text>exemple</text></tag>
 			<tag><text>coderunner</text></tag>
 			<tag><text>python</text></tag>
+			<tag><text>template</text></tag>
+		</tags>
+	</question>
+	<!-- question: gentestmoodle.py  -->
+	<question type="shortanswer">
+		<name><text>Exemple de question shortanswer</text></name>
+		<questiontext format="html">
+			<text><![CDATA[Combien font deux et deux ?]]></text>
+		</questiontext>
+		<generalfeedback format="html"><text><![CDATA[Merci d'avoir pris le temps de répondre à cette question.]]></text></generalfeedback>
+		<defaultgrade>1.0000000</defaultgrade>
+		<penalty>0.3333333</penalty>
+		<hidden>0</hidden>
+		<idnumber></idnumber>
+		<single>false</single>
+		<shuffleanswers>true</shuffleanswers>
+		<answernumbering>123</answernumbering>
+		<showstandardinstruction>0</showstandardinstruction>
+		<correctfeedback format="html">
+			<text>Bravo! Votre réponse est correcte.</text>
+		</correctfeedback>
+		<partiallycorrectfeedback format="html">
+			<text>Votre réponse est partiellement correcte.</text>
+		</partiallycorrectfeedback>
+		<incorrectfeedback format="html">
+			<text>Votre réponse est incorrecte.</text>
+		</incorrectfeedback>
+		<shownumcorrect/>
+		<answer fraction="100.0" format="html">
+			<text>quatre</text>
+			<feedback format="html">
+				<text></text>
+			</feedback>
+			<tolerance>0.0</tolerance>
+		</answer>
+		<tags>
+			<tag><text>qtex2xml</text></tag>
+			<tag><text>exemple</text></tag>
+			<tag><text>shortanswer</text></tag>
 			<tag><text>template</text></tag>
 		</tags>
 	</question>

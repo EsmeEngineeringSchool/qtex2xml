@@ -65,7 +65,8 @@ infos={"global"           : globalinfo ,  \
        "stack"            : stackinfo, \
        "multichoicewiris" : multichoicewirisinfo,\
        "shortanswerwiris" : shortanswerwirisinfo,\
-       "matching"         : matchinginfo
+       "matching"         : matchinginfo,
+       "shortanswer"      : multichoiceinfo
       }
 
 # entrées multiples exigées de même taille et au moins une doit être présente
