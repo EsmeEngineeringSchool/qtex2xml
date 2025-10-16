@@ -42,3 +42,36 @@ entrees={'TYPE'                    :{'long':False,'translation':False,'multiple'
          'STACK_QVAR'              :{'long':False,'translation':False,'multiple':False},
          'STACK_SFBACK'            :{'long':False,'translation':False,'multiple':False}
 } 
+
+# entrees par type 
+globalinfo           = ['TYPE','NAME']
+questioninfo         = [('Q','Q_LONG'),('GFBACK','GFBACK_LONG'),'TAGS','Q_IMG']
+multichoiceinfo      = ['CFBACK','PFBACK','IFBACK','ANSW_FBACK','ANSW_GRAD',('ANSW_TEXT','ANSW_TEXT_LONG'),'ANSW_IMG']
+numericalinfo        = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
+coderunnerinfo       = ['CR_ACELANG','CR_TWIGALL','CR_PENALTYREGIME','CR_ISCOMBINATORTEMPLATE','CR_TEMPLATE',\
+                        'CR_PRELOAD','CR_ANSWER','CR_CASE_MARK','CR_CASE_CODE',('CR_CASE_EXPECTED','CR_CASE_EXPECTED_LONG'),\
+                        'CR_CASE_DISPLAY','CR_CASE_STDIN','CR_CASE_EXTRA','CR_CASE_ASEXAMPLE']
+stackinfo            = ['STACK_QVAR','STACK_SFBACK']
+shortanswerwirisinfo = ['ANSW_FBACK','ANSW_GRAD','ANSW_TEXT']
+multichoicewirisinfo = []
+matchinginfo         = ['CFBACK','PFBACK','IFBACK',('ANSW_TEXT','ANSW_TEXT_LONG'), ('SUB_Q','SUB_Q_LONG')]
+
+
+infos={"global"           : globalinfo ,  \
+       "question"         : questioninfo, \
+       "multichoice"      : multichoiceinfo,\
+       "numerical"        : numericalinfo,\
+       "coderunner"       : coderunnerinfo,\
+       "stack"            : stackinfo, \
+       "multichoicewiris" : multichoicewirisinfo,\
+       "shortanswerwiris" : shortanswerwirisinfo,\
+       "matching"         : matchinginfo
+      }
+
+# entrées multiples exigées de même taille et au moins une doit être présente
+types_with_requirements = ["multichoice","numerical","coderunner","matching"]
+same_number={"multichoice" :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT',"ANSW_IMG"],
+             "numerical"   :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT'],
+             "matching"    :[ 'ANSW_FBACK','ANSW_GRAD','ANSW_TEXT', "SUB_Q"],
+             "coderunner"  :[ 'CR_CASE_MARK','CR_CASE_CODE','CR_CASE_ASEXAMPLE','CR_CASE_EXPECTED',
+                              'CR_CASE_DISPLAY','CR_CASE_STDIN','CR_CASE_EXTRA']}
